@@ -12,3 +12,4 @@
 - Phase 3 S04 export: html2canvas 엽서 캡처·저장/이미지 공유·카카오 링크 피드·PostcardPreview·ExportActions
 - Phase 4 PWA: vite-plugin-pwa·manifest·오프라인 배너·카카오 오프라인 비활성·README
 - IndexedDB thumb 저장 제거: 셀 blob만 유지
+- FAB 위치: `max-w-app`(448px) 컬럼 안 우하단 정렬 (`OfflineBanner`·Walk 오류 배너와 동일 패턴)
