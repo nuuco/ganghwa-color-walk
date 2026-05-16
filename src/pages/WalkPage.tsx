@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { AppBar } from '../components/layout/AppBar'
 import { DynamicGrid } from '../components/grid/DynamicGrid'
+import { CenterColorSlotToggle } from '../components/walk/CenterColorSlotToggle'
+import { DEFAULT_CELL_COUNT, getEffectiveFilledCount, isCenterColorSlot } from '../config/grid'
 import { WalkHeader } from '../components/walk/WalkHeader'
 import { ThemeHintBar } from '../components/walk/ThemeHintBar'
 import { WalkJournal } from '../components/walk/WalkJournal'
 import { WalkProgressFooter } from '../components/walk/WalkProgressFooter'
 import { useApp } from '../context/AppContext'
-import { DEFAULT_CELL_COUNT } from '../config/grid'
 import { useDebouncedCallback } from '../hooks/useDebouncedCallback'
 
 export function WalkPage() {
@@ -21,6 +22,7 @@ export function WalkPage() {
     importNotice,
     clearFileError,
     clearImportNotice,
+    setCenterColorSlot,
   } = useApp()
 
   const sheet = getActiveSheet()
@@ -68,9 +70,11 @@ export function WalkPage() {
 
 
   const total = sheet.rows * sheet.cols
+  const effectiveFilled = getEffectiveFilledCount(sheet)
 
   const handleCellClick = (index: number, filled: boolean) => {
     if (isImporting) return
+    if (isCenterColorSlot(sheet, index)) return
     if (filled) {
       openCellDetail(index)
     } else {
@@ -101,10 +105,14 @@ export function WalkPage() {
       <WalkHeader
         sheetTitle={sheet.sheetTitle}
         themeLabel={sheet.themeLabel}
-        filledCount={sheet.filledCount}
+        filledCount={effectiveFilled}
         total={total}
       />
       <ThemeHintBar themeLabel={sheet.themeLabel} />
+      <CenterColorSlotToggle
+        enabled={sheet.centerColorSlot}
+        onChange={(enabled) => void setCenterColorSlot(sheet.id, enabled)}
+      />
       <WalkJournal
         label="산책 시작"
         value={noteStart}
@@ -114,7 +122,7 @@ export function WalkPage() {
           debouncedPersistNotes({ noteStart: v })
         }}
       />
-      <DynamicGrid cells={sheet.cells} themeColor={sheet.themeColor} onCellClick={handleCellClick} />
+      <DynamicGrid sheet={sheet} onCellClick={handleCellClick} />
       <WalkJournal
         label="돌아보며"
         value={noteReflection}
@@ -125,7 +133,7 @@ export function WalkPage() {
         }}
       />
       <WalkProgressFooter
-        filledCount={sheet.filledCount}
+        filledCount={effectiveFilled}
         total={total || DEFAULT_CELL_COUNT}
         themeColor={sheet.themeColor}
       />

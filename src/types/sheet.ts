@@ -26,6 +26,7 @@ export interface StoredSheetMeta {
   cols: number
   status: SheetStatus
   filledCount: number
+  centerColorSlot?: boolean
   cells: Record<string, StoredCellRef>
   createdAt: string
   updatedAt: string
@@ -46,6 +47,7 @@ export interface ColorWalkSheet {
   status: SheetStatus
   cells: SheetCell[]
   filledCount: number
+  centerColorSlot: boolean
   rows: number
   cols: number
   noteStart: string

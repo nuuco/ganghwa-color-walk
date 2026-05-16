@@ -1,4 +1,6 @@
 import { forwardRef } from 'react'
+import { isCenterColorSlot } from '../../config/grid'
+import { ColorSlotCell } from '../grid/ColorSlotCell'
 import type { ColorWalkSheet } from '../../types/sheet'
 
 interface PostcardPreviewProps {
@@ -54,21 +56,27 @@ export const PostcardPreview = forwardRef<HTMLElement, PostcardPreviewProps>(
             gap: 'var(--grid-gap)',
           }}
         >
-          {sheet.cells.slice(0, cellCount).map((cell) => (
-            <div
-              key={cell.index}
-              className="relative aspect-square overflow-hidden rounded-cell bg-surface-high"
-            >
-              {cell.imageUrl ? (
-                <img
-                  src={cell.imageUrl}
-                  alt=""
-                  className="h-full w-full object-cover"
-                  crossOrigin="anonymous"
-                />
-              ) : null}
-            </div>
-          ))}
+          {sheet.cells.slice(0, cellCount).map((cell) => {
+            if (isCenterColorSlot(sheet, cell.index)) {
+              return <ColorSlotCell key={cell.index} themeColor={sheet.themeColor} />
+            }
+
+            return (
+              <div
+                key={cell.index}
+                className="relative aspect-square overflow-hidden rounded-cell bg-surface-high"
+              >
+                {cell.imageUrl ? (
+                  <img
+                    src={cell.imageUrl}
+                    alt=""
+                    className="h-full w-full object-cover"
+                    crossOrigin="anonymous"
+                  />
+                ) : null}
+              </div>
+            )
+          })}
         </div>
 
         <footer className="mt-4 flex items-end justify-between gap-3">

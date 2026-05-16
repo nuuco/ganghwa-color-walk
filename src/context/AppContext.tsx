@@ -7,7 +7,13 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import { DEFAULT_CELL_COUNT, DEFAULT_COLS, DEFAULT_ROWS } from '../config/grid'
+import {
+  DEFAULT_CELL_COUNT,
+  DEFAULT_COLS,
+  DEFAULT_ROWS,
+  getFilledIndicesForTargeting,
+  isCenterColorSlot,
+} from '../config/grid'
 import { validateImageFile } from '../lib/imageValidation'
 import { resolveCellTargets } from '../lib/resolveCellTargets'
 import { createSheetId } from '../lib/sheetId'
@@ -19,6 +25,7 @@ import {
   loadAllSheets,
   persistSheetPatch,
   setCellsFromBlobs,
+  setCenterColorSlotInStorage,
 } from '../lib/storage'
 import type {
   AppStep,
@@ -49,6 +56,7 @@ function applyMetaToSheet(sheet: ColorWalkSheet, meta: StoredSheetMeta): ColorWa
     themeColor: meta.themeColor,
     status: meta.status,
     filledCount: meta.filledCount,
+    centerColorSlot: meta.centerColorSlot ?? false,
     noteStart: meta.noteStart ?? '',
     noteReflection: meta.noteReflection ?? '',
     walkOrdinal: meta.walkOrdinal,
@@ -57,14 +65,6 @@ function applyMetaToSheet(sheet: ColorWalkSheet, meta: StoredSheetMeta): ColorWa
     updatedAt: meta.updatedAt,
     createdAt: meta.createdAt,
   }
-}
-
-function filledIndicesFromSheet(sheet: ColorWalkSheet): Set<number> {
-  const filled = new Set<number>()
-  for (const cell of sheet.cells) {
-    if (cell.imageUrl) filled.add(cell.index)
-  }
-  return filled
 }
 
 interface AppContextValue {
@@ -98,6 +98,7 @@ interface AppContextValue {
   setCellsFromFiles: (files: File[]) => Promise<void>
   deleteSheet: (sheetId: string) => Promise<void>
   updateSheet: (sheetId: string, patch: Partial<ColorWalkSheet>) => Promise<void>
+  setCenterColorSlot: (sheetId: string, enabled: boolean) => Promise<void>
   getActiveSheet: () => ColorWalkSheet | undefined
 }
 
@@ -167,6 +168,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (patch.filledCount !== undefined) metaPatch.filledCount = patch.filledCount
     if (patch.walkOrdinal !== undefined) metaPatch.walkOrdinal = patch.walkOrdinal
     if (patch.completedAt !== undefined) metaPatch.completedAt = patch.completedAt
+    if (patch.centerColorSlot !== undefined) metaPatch.centerColorSlot = patch.centerColorSlot
 
     const meta = await persistSheetPatch(sheetId, metaPatch)
     if (!meta) return
@@ -208,6 +210,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       status: meta.status,
       cells: createEmptyCells(),
       filledCount: 0,
+      centerColorSlot: false,
       rows: DEFAULT_ROWS,
       cols: DEFAULT_COLS,
       noteStart: '',
@@ -254,7 +257,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const totalCells = sheet.rows * sheet.cols
       const targets = resolveCellTargets({
         totalCells,
-        filledIndices: filledIndicesFromSheet(sheet),
+        filledIndices: getFilledIndicesForTargeting(sheet),
         startIndex: activeCellIndex,
         fileCount: validFiles.length,
       })
@@ -302,19 +305,43 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [activeCellIndex, activeSheetId, sheets],
   )
 
-  const openCaptureSheet = useCallback((cellIndex?: number) => {
-    if (cellIndex !== undefined) setActiveCellIndex(cellIndex)
-    setCaptureSheetOpen(true)
-  }, [])
+  const setCenterColorSlot = useCallback(async (sheetId: string, enabled: boolean) => {
+    const meta = await setCenterColorSlotInStorage(sheetId, enabled)
+    if (!meta) return
+
+    const hydrated = await hydrateSheet(meta)
+    setSheets((prev) => prev.map((s) => (s.id === sheetId ? hydrated : s)))
+
+    if (hydrated.status === 'completed' && step !== 'view') {
+      setStep('view')
+    }
+  }, [step])
+
+  const openCaptureSheet = useCallback(
+    (cellIndex?: number) => {
+      if (cellIndex !== undefined) {
+        const sheet = sheets.find((s) => s.id === activeSheetId)
+        if (sheet && isCenterColorSlot(sheet, cellIndex)) return
+        setActiveCellIndex(cellIndex)
+      }
+      setCaptureSheetOpen(true)
+    },
+    [activeSheetId, sheets],
+  )
 
   const closeCaptureSheet = useCallback(() => {
     setCaptureSheetOpen(false)
   }, [])
 
-  const openCellDetail = useCallback((cellIndex: number) => {
-    setActiveCellIndex(cellIndex)
-    setCellDetailOpen(true)
-  }, [])
+  const openCellDetail = useCallback(
+    (cellIndex: number) => {
+      const sheet = sheets.find((s) => s.id === activeSheetId)
+      if (sheet && isCenterColorSlot(sheet, cellIndex)) return
+      setActiveCellIndex(cellIndex)
+      setCellDetailOpen(true)
+    },
+    [activeSheetId, sheets],
+  )
 
   const closeCellDetail = useCallback(() => {
     setCellDetailOpen(false)
@@ -337,6 +364,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
       await deleteSheet(deleteTarget.sheetId)
       setStep('archive')
     } else {
+      const sheet = sheets.find((s) => s.id === deleteTarget.sheetId)
+      if (sheet && isCenterColorSlot(sheet, deleteTarget.cellIndex)) {
+        closeConfirmDelete()
+        return
+      }
       const meta = await clearCellFromStorage(deleteTarget.sheetId, deleteTarget.cellIndex)
       if (meta) {
         const hydrated = await hydrateSheet(meta)
@@ -347,7 +379,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
 
     closeConfirmDelete()
-  }, [closeConfirmDelete, deleteSheet, deleteTarget])
+  }, [closeConfirmDelete, deleteSheet, deleteTarget, sheets])
 
   const value = useMemo<AppContextValue>(
     () => ({
@@ -381,6 +413,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setCellsFromFiles,
       deleteSheet,
       updateSheet,
+      setCenterColorSlot,
       getActiveSheet,
     }),
     [
@@ -412,6 +445,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setCellsFromFiles,
       deleteSheet,
       updateSheet,
+      setCenterColorSlot,
       getActiveSheet,
     ],
   )

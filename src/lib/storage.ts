@@ -1,5 +1,5 @@
 import localforage from 'localforage'
-import { DEFAULT_CELL_COUNT, DEFAULT_COLS, DEFAULT_ROWS } from '../config/grid'
+import { DEFAULT_CELL_COUNT, DEFAULT_COLS, DEFAULT_ROWS, getCenterCellIndex } from '../config/grid'
 import type { ColorWalkSheet, SheetCell, SheetsIndex, StoredSheetMeta } from '../types/sheet'
 import { getOrCreateObjectUrl, revokeObjectUrl } from './blobUrls'
 import {
@@ -22,6 +22,32 @@ function nowIso(): string {
 
 function createEmptyCells(count = DEFAULT_CELL_COUNT): SheetCell[] {
   return Array.from({ length: count }, (_, index) => ({ index }))
+}
+
+async function applyCompletionFields(
+  meta: StoredSheetMeta,
+  filledCount: number,
+  centerColorSlot: boolean,
+): Promise<{
+  status: StoredSheetMeta['status']
+  walkOrdinal?: number
+  completedAt?: string
+}> {
+  const required = meta.rows * meta.cols
+  const effective = filledCount + (centerColorSlot ? 1 : 0)
+  let status = meta.status
+  let walkOrdinal = meta.walkOrdinal
+  let completedAt = meta.completedAt
+
+  if (effective >= required && status !== 'completed') {
+    status = 'completed'
+    walkOrdinal = meta.walkOrdinal ?? (await countCompletedSheets()) + 1
+    completedAt = meta.completedAt ?? nowIso()
+  } else if (status === 'completed' && effective < required) {
+    status = 'in_progress'
+  }
+
+  return { status, walkOrdinal, completedAt }
 }
 
 export async function getIndex(): Promise<SheetsIndex> {
@@ -100,6 +126,7 @@ export async function hydrateSheet(meta: StoredSheetMeta): Promise<ColorWalkShee
     status: meta.status,
     cells,
     filledCount: meta.filledCount,
+    centerColorSlot: meta.centerColorSlot ?? false,
     rows: meta.rows,
     cols: meta.cols,
     noteStart: meta.noteStart ?? '',
@@ -141,6 +168,7 @@ export async function createSheetMeta(
     cols: DEFAULT_COLS,
     status: 'in_progress',
     filledCount: 0,
+    centerColorSlot: false,
     cells: {},
     createdAt: ts,
     updatedAt: ts,
@@ -198,7 +226,11 @@ export async function setCellsFromBlobs(
   let cells = { ...meta.cells }
   const wasCompleted = meta.status === 'completed'
 
+  const centerIndex = getCenterCellIndex(meta.rows, meta.cols)
+
   for (const { cellIndex, blob } of assignments) {
+    if (meta.centerColorSlot && cellIndex === centerIndex) continue
+
     const { row, col } = indexToRowCol(cellIndex, meta.cols)
     const rc = rowColKey(row, col)
     const blobKey = cellBlobKey(sheetId, row, col)
@@ -212,15 +244,11 @@ export async function setCellsFromBlobs(
   }
 
   const filledCount = Object.keys(cells).length
-  let status = meta.status
-  let walkOrdinal = meta.walkOrdinal
-  let completedAt = meta.completedAt
-
-  if (filledCount >= meta.rows * meta.cols && status !== 'completed') {
-    status = 'completed'
-    walkOrdinal = meta.walkOrdinal ?? (await countCompletedSheets()) + 1
-    completedAt = meta.completedAt ?? nowIso()
-  }
+  const { status, walkOrdinal, completedAt } = await applyCompletionFields(
+    meta,
+    filledCount,
+    meta.centerColorSlot ?? false,
+  )
 
   const next: StoredSheetMeta = {
     ...meta,
@@ -265,17 +293,62 @@ export async function clearCellFromStorage(
   const cells = { ...meta.cells }
   delete cells[rc]
   const filledCount = Object.keys(cells).length
-
-  let status = meta.status
-  if (status === 'completed' && filledCount < meta.rows * meta.cols) {
-    status = 'in_progress'
-  }
+  const { status } = await applyCompletionFields(
+    meta,
+    filledCount,
+    meta.centerColorSlot ?? false,
+  )
 
   const next: StoredSheetMeta = {
     ...meta,
     cells,
     filledCount,
     status,
+    updatedAt: nowIso(),
+  }
+  await saveSheetMeta(next)
+  const index = await getIndex()
+  await saveIndex(await sortIndexByUpdatedAt(index))
+  return next
+}
+
+export async function setCenterColorSlotInStorage(
+  sheetId: string,
+  enabled: boolean,
+): Promise<StoredSheetMeta | null> {
+  const meta = await getSheetMeta(sheetId)
+  if (!meta) return null
+
+  let cells = { ...meta.cells }
+
+  if (enabled) {
+    const centerIndex = getCenterCellIndex(meta.rows, meta.cols)
+    const { row, col } = indexToRowCol(centerIndex, meta.cols)
+    const rc = rowColKey(row, col)
+    const ref = cells[rc]
+    if (ref) {
+      revokeObjectUrl(ref.blobKey)
+      await removeCellBlob(sheetId, row, col)
+      cells = { ...cells }
+      delete cells[rc]
+    }
+  }
+
+  const filledCount = Object.keys(cells).length
+  const { status, walkOrdinal, completedAt } = await applyCompletionFields(
+    meta,
+    filledCount,
+    enabled,
+  )
+
+  const next: StoredSheetMeta = {
+    ...meta,
+    centerColorSlot: enabled,
+    cells,
+    filledCount,
+    status,
+    walkOrdinal,
+    completedAt,
     updatedAt: nowIso(),
   }
   await saveSheetMeta(next)

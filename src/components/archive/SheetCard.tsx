@@ -1,5 +1,6 @@
 import type { ColorWalkSheet } from '../../types/sheet'
-import { DEFAULT_COLS, DEFAULT_ROWS } from '../../config/grid'
+import { DEFAULT_COLS, DEFAULT_ROWS, getEffectiveFilledCount, isCenterColorSlot } from '../../config/grid'
+import { ColorSlotCell } from '../grid/ColorSlotCell'
 
 interface SheetCardProps {
   sheet: ColorWalkSheet
@@ -18,7 +19,8 @@ function formatDate(iso?: string): string {
 
 export function SheetCard({ sheet, onOpen, onDelete }: SheetCardProps) {
   const total = sheet.rows * sheet.cols
-  const progress = total > 0 ? Math.round((sheet.filledCount / total) * 100) : 0
+  const effectiveFilled = getEffectiveFilledCount(sheet)
+  const progress = total > 0 ? Math.round((effectiveFilled / total) * 100) : 0
   const dateLabel = formatDate(sheet.completedAt ?? sheet.updatedAt)
   const badge = sheet.status === 'completed' ? '완성' : '임시저장'
 
@@ -66,21 +68,27 @@ export function SheetCard({ sheet, onOpen, onDelete }: SheetCardProps) {
             gap: 'var(--grid-gap)',
           }}
         >
-          {sheet.cells.slice(0, DEFAULT_ROWS * DEFAULT_COLS).map((cell) => (
-            <div
-              key={cell.index}
-              className="aspect-square overflow-hidden rounded-cell bg-surface-high"
-            >
-              {cell.imageUrl ? (
-                <img src={cell.imageUrl} alt="" className="h-full w-full object-cover" />
-              ) : (
-                <div
-                  className="h-full w-full border border-dashed border-outline-variant/60"
-                  style={{ borderColor: `${sheet.themeColor}88` }}
-                />
-              )}
-            </div>
-          ))}
+          {sheet.cells.slice(0, DEFAULT_ROWS * DEFAULT_COLS).map((cell) => {
+            if (isCenterColorSlot(sheet, cell.index)) {
+              return <ColorSlotCell key={cell.index} themeColor={sheet.themeColor} />
+            }
+
+            return (
+              <div
+                key={cell.index}
+                className="aspect-square overflow-hidden rounded-cell bg-surface-high"
+              >
+                {cell.imageUrl ? (
+                  <img src={cell.imageUrl} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  <div
+                    className="h-full w-full border border-dashed border-outline-variant/60"
+                    style={{ borderColor: `${sheet.themeColor}88` }}
+                  />
+                )}
+              </div>
+            )
+          })}
         </div>
       </button>
 

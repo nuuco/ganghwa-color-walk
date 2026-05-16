@@ -1,14 +1,15 @@
-import { DEFAULT_COLS, DEFAULT_ROWS } from '../../config/grid'
-import type { SheetCell } from '../../types/sheet'
+import { DEFAULT_COLS, isCenterColorSlot } from '../../config/grid'
+import type { ColorWalkSheet } from '../../types/sheet'
 import { GridCell } from './GridCell'
 
 interface DynamicGridProps {
-  cells: SheetCell[]
-  themeColor: string
+  sheet: Pick<ColorWalkSheet, 'cells' | 'rows' | 'cols' | 'centerColorSlot' | 'themeColor'>
   onCellClick: (index: number, filled: boolean) => void
 }
 
-export function DynamicGrid({ cells, themeColor, onCellClick }: DynamicGridProps) {
+export function DynamicGrid({ sheet, onCellClick }: DynamicGridProps) {
+  const cellCount = sheet.rows * sheet.cols
+
   return (
     <div
       className="grid w-full px-page"
@@ -17,16 +18,31 @@ export function DynamicGrid({ cells, themeColor, onCellClick }: DynamicGridProps
         gap: 'var(--grid-gap)',
       }}
     >
-      {cells.slice(0, DEFAULT_ROWS * DEFAULT_COLS).map((cell) => (
-        <GridCell
-          key={cell.index}
-          index={cell.index}
-          imageUrl={cell.imageUrl}
-          themeColor={themeColor}
-          filled={Boolean(cell.imageUrl)}
-          onClick={() => onCellClick(cell.index, Boolean(cell.imageUrl))}
-        />
-      ))}
+      {sheet.cells.slice(0, cellCount).map((cell) => {
+        if (isCenterColorSlot(sheet, cell.index)) {
+          return (
+            <GridCell
+              key={cell.index}
+              index={cell.index}
+              variant="color-slot"
+              themeColor={sheet.themeColor}
+              onClick={() => {}}
+            />
+          )
+        }
+
+        const filled = Boolean(cell.imageUrl)
+        return (
+          <GridCell
+            key={cell.index}
+            index={cell.index}
+            variant={filled ? 'photo-filled' : 'photo-empty'}
+            imageUrl={cell.imageUrl}
+            themeColor={sheet.themeColor}
+            onClick={() => onCellClick(cell.index, filled)}
+          />
+        )
+      })}
     </div>
   )
 }
