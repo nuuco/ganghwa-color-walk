@@ -1,5 +1,6 @@
 import { DEFAULT_COLS, isCenterColorSlot } from '../../config/grid'
 import type { ColorWalkSheet } from '../../types/sheet'
+import { CenterColorSlotCell } from './CenterColorSlotCell'
 import { GridCell } from './GridCell'
 
 interface DynamicGridProps {
@@ -21,12 +22,11 @@ export function DynamicGrid({ sheet, onCellClick }: DynamicGridProps) {
       {sheet.cells.slice(0, cellCount).map((cell) => {
         if (isCenterColorSlot(sheet, cell.index)) {
           return (
-            <GridCell
+            <CenterColorSlotCell
               key={cell.index}
-              index={cell.index}
-              variant="color-slot"
               themeColor={sheet.themeColor}
-              onClick={() => {}}
+              imageUrl={cell.imageUrl}
+              showEmptyPlaceholder
             />
           )
         }

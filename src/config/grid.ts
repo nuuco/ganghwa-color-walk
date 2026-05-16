@@ -18,10 +18,26 @@ export function isCenterColorSlot(
   return sheet.centerColorSlot && index === getCenterCellIndex(sheet.rows, sheet.cols)
 }
 
+export function computeEffectiveFilledCount(params: {
+  filledCount: number
+  centerColorSlot: boolean
+  centerHasPhoto: boolean
+}): number {
+  const { filledCount, centerColorSlot, centerHasPhoto } = params
+  if (!centerColorSlot) return filledCount
+  return filledCount - (centerHasPhoto ? 1 : 0) + 1
+}
+
 export function getEffectiveFilledCount(
-  sheet: Pick<ColorWalkSheet, 'filledCount' | 'centerColorSlot'>,
+  sheet: Pick<ColorWalkSheet, 'filledCount' | 'centerColorSlot' | 'rows' | 'cols' | 'cells'>,
 ): number {
-  return sheet.filledCount + (sheet.centerColorSlot ? 1 : 0)
+  const centerIndex = getCenterCellIndex(sheet.rows, sheet.cols)
+  const centerHasPhoto = Boolean(sheet.cells[centerIndex]?.imageUrl)
+  return computeEffectiveFilledCount({
+    filledCount: sheet.filledCount,
+    centerColorSlot: sheet.centerColorSlot,
+    centerHasPhoto,
+  })
 }
 
 /** 갤러리·빈 칸 탐색: 이미 채워진 칸(사진·컬러 슬롯) */

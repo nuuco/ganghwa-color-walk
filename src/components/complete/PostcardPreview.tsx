@@ -1,6 +1,6 @@
 import { forwardRef } from 'react'
 import { isCenterColorSlot } from '../../config/grid'
-import { ColorSlotCell } from '../grid/ColorSlotCell'
+import { CenterColorSlotCell } from '../grid/CenterColorSlotCell'
 import type { ColorWalkSheet } from '../../types/sheet'
 
 interface PostcardPreviewProps {
@@ -58,7 +58,14 @@ export const PostcardPreview = forwardRef<HTMLElement, PostcardPreviewProps>(
         >
           {sheet.cells.slice(0, cellCount).map((cell) => {
             if (isCenterColorSlot(sheet, cell.index)) {
-              return <ColorSlotCell key={cell.index} themeColor={sheet.themeColor} />
+              return (
+                <CenterColorSlotCell
+                  key={cell.index}
+                  themeColor={sheet.themeColor}
+                  imageUrl={cell.imageUrl}
+                  imageCrossOrigin="anonymous"
+                />
+              )
             }
 
             return (

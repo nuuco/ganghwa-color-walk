@@ -1,6 +1,4 @@
-import { ColorSlotCell } from './ColorSlotCell'
-
-export type GridCellVariant = 'photo-empty' | 'photo-filled' | 'color-slot'
+export type GridCellVariant = 'photo-empty' | 'photo-filled'
 
 interface GridCellProps {
   index: number
@@ -11,10 +9,6 @@ interface GridCellProps {
 }
 
 export function GridCell({ index, variant, imageUrl, themeColor, onClick }: GridCellProps) {
-  if (variant === 'color-slot') {
-    return <ColorSlotCell themeColor={themeColor} />
-  }
-
   const filled = variant === 'photo-filled'
 
   return (

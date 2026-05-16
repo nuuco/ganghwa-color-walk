@@ -1,6 +1,6 @@
 import type { ColorWalkSheet } from '../../types/sheet'
 import { DEFAULT_COLS, DEFAULT_ROWS, getEffectiveFilledCount, isCenterColorSlot } from '../../config/grid'
-import { ColorSlotCell } from '../grid/ColorSlotCell'
+import { CenterColorSlotCell } from '../grid/CenterColorSlotCell'
 
 interface SheetCardProps {
   sheet: ColorWalkSheet
@@ -70,7 +70,13 @@ export function SheetCard({ sheet, onOpen, onDelete }: SheetCardProps) {
         >
           {sheet.cells.slice(0, DEFAULT_ROWS * DEFAULT_COLS).map((cell) => {
             if (isCenterColorSlot(sheet, cell.index)) {
-              return <ColorSlotCell key={cell.index} themeColor={sheet.themeColor} />
+              return (
+                <CenterColorSlotCell
+                  key={cell.index}
+                  themeColor={sheet.themeColor}
+                  imageUrl={cell.imageUrl}
+                />
+              )
             }
 
             return (
