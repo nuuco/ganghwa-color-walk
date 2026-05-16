@@ -9,8 +9,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       injectRegister: 'auto',
       manifest: {
-        name: '컬러워크',
-        short_name: '컬러워크',
+        name: '강화 컬러워크',
+        short_name: '강화 컬러워크',
         theme_color: '#131313',
         background_color: '#131313',
         display: 'standalone',
