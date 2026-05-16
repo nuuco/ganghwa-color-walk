@@ -57,20 +57,6 @@ export function ArchiveViewToggle({ value, onChange }: ArchiveViewToggleProps) {
     >
       <button
         type="button"
-        onClick={() => onChange('bento')}
-        aria-pressed={value === 'bento'}
-        aria-label="벤토 보기"
-        className={[
-          'flex h-9 w-9 items-center justify-center rounded-lg transition-colors',
-          value === 'bento'
-            ? 'bg-background text-on-surface shadow-sm'
-            : 'text-on-surface-variant',
-        ].join(' ')}
-      >
-        <BentoIcon active={value === 'bento'} />
-      </button>
-      <button
-        type="button"
         onClick={() => onChange('compact')}
         aria-pressed={value === 'compact'}
         aria-label="간략 보기"
@@ -82,6 +68,20 @@ export function ArchiveViewToggle({ value, onChange }: ArchiveViewToggleProps) {
         ].join(' ')}
       >
         <CompactIcon active={value === 'compact'} />
+      </button>
+      <button
+        type="button"
+        onClick={() => onChange('bento')}
+        aria-pressed={value === 'bento'}
+        aria-label="벤토 보기"
+        className={[
+          'flex h-9 w-9 items-center justify-center rounded-lg transition-colors',
+          value === 'bento'
+            ? 'bg-background text-on-surface shadow-sm'
+            : 'text-on-surface-variant',
+        ].join(' ')}
+      >
+        <BentoIcon active={value === 'bento'} />
       </button>
     </div>
   )

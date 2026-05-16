@@ -11,7 +11,7 @@ function readStoredMode(): ArchiveViewMode {
   } catch {
     /* ignore */
   }
-  return 'bento'
+  return 'compact'
 }
 
 export function useArchiveViewMode() {
