@@ -9,3 +9,4 @@
 - MVP 의사결정: BottomNav 없음, S01 ← 없음, 제목·컬러명 필수, 엽서 헤드 view 편집, 9칸 촬영, 공유 3종, 날짜 S04 수정
 - Phase 1 scaffold complete: React 19·Vite·Tailwind·Context step 전환·S01~S04·O01~O03 스텁
 - Phase 2 IndexedDB camera persist: localforage·셀 Blob·카메라/갤러리·O03 삭제·메모 debounce·9/9 완성
+- Phase 3 S04 export: html2canvas 엽서 캡처·저장/이미지 공유·카카오 링크 피드·PostcardPreview·ExportActions
