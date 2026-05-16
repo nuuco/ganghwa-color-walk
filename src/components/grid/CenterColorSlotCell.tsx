@@ -17,7 +17,7 @@ export function CenterColorSlotCell({
       {imageUrl ? (
         <img src={imageUrl} alt="" className="h-full w-full object-cover" />
       ) : showEmptyPlaceholder ? (
-        <motion
+        <div
           className="h-full w-full border-2 border-dashed"
           style={{ borderColor: themeColor }}
         />
