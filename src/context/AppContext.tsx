@@ -25,6 +25,7 @@ import {
   loadAllSheets,
   persistSheetPatch,
   setCellsFromBlobs,
+  didBecomeCompleted,
   moveOrSwapCells,
   setCenterColorSlotInStorage,
 } from '../lib/storage'
@@ -328,6 +329,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (!sheet) return
       if (isCenterColorSlot(sheet, fromIndex) || isCenterColorSlot(sheet, toIndex)) return
 
+      const statusBefore = sheet.status
+
       setSheets((prev) =>
         prev.map((s) => {
           if (s.id !== activeSheetId) return s
@@ -346,6 +349,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setSheets((prev) =>
         prev.map((s) => (s.id === activeSheetId ? applyMetaToSheet(s, meta) : s)),
       )
+
+      if (didBecomeCompleted({ status: statusBefore }, meta)) {
+        setStep('view')
+      }
     },
     [activeSheetId, isImporting, sheets],
   )

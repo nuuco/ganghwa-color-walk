@@ -2,13 +2,30 @@ interface WalkProgressFooterProps {
   filledCount: number
   total: number
   themeColor: string
+  showCompleteCta?: boolean
+  onViewComplete?: () => void
 }
 
-export function WalkProgressFooter({ filledCount, total, themeColor }: WalkProgressFooterProps) {
+export function WalkProgressFooter({
+  filledCount,
+  total,
+  themeColor,
+  showCompleteCta = false,
+  onViewComplete,
+}: WalkProgressFooterProps) {
   const percent = total > 0 ? Math.round((filledCount / total) * 100) : 0
 
   return (
     <footer className="sticky bottom-0 border-t border-outline-variant/30 bg-background/95 px-page py-4 backdrop-blur-sm">
+      {showCompleteCta ? (
+        <button
+          type="button"
+          onClick={onViewComplete}
+          className="mb-3 w-full rounded-xl bg-primary py-3 text-sm font-semibold text-on-primary"
+        >
+          완성 화면 보기
+        </button>
+      ) : null}
       <div className="mb-2 flex items-center justify-between text-xs font-medium tracking-wide text-on-surface-variant">
         <span>COLLECTION PROGRESS</span>
         <span>{percent}%</span>

@@ -101,7 +101,11 @@ export function WalkPage() {
           {importNotice}
         </div>
       ) : null}
-      <AppBar title="산책" showBack onBack={() => setStep('archive')} />
+      <AppBar
+        title="산책"
+        showBack
+        onBack={() => setStep(sheet.status === 'completed' ? 'view' : 'archive')}
+      />
       <WalkHeader
         sheetTitle={sheet.sheetTitle}
         themeLabel={sheet.themeLabel}
@@ -144,6 +148,8 @@ export function WalkPage() {
         filledCount={effectiveFilled}
         total={total || DEFAULT_CELL_COUNT}
         themeColor={sheet.themeColor}
+        showCompleteCta={sheet.status === 'completed'}
+        onViewComplete={() => setStep('view')}
       />
     </div>
   )

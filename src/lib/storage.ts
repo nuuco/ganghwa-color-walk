@@ -39,6 +39,13 @@ function centerHasPhotoInCells(
   return Boolean(cells[rowColKey(row, col)])
 }
 
+export function didBecomeCompleted(
+  before: Pick<StoredSheetMeta, 'status'>,
+  after: Pick<StoredSheetMeta, 'status'>,
+): boolean {
+  return before.status !== 'completed' && after.status === 'completed'
+}
+
 async function applyCompletionFields(
   meta: StoredSheetMeta,
   cells: Record<string, { blobKey: string }>,
@@ -244,7 +251,6 @@ export async function setCellsFromBlobs(
   }
 
   let cells = { ...meta.cells }
-  const wasCompleted = meta.status === 'completed'
 
   const centerIndex = getCenterCellIndex(meta.rows, meta.cols)
 
@@ -283,8 +289,7 @@ export async function setCellsFromBlobs(
   const index = await getIndex()
   await saveIndex(await sortIndexByUpdatedAt(index))
 
-  const justCompleted = !wasCompleted && status === 'completed'
-  return { meta: next, completed: justCompleted }
+  return { meta: next, completed: didBecomeCompleted(meta, next) }
 }
 
 export async function setCellFromBlob(
