@@ -56,10 +56,8 @@ export function InstallPromptBanner({
     if (usesNativeInstall || scenario === 'android-manual') {
       const installed = await onNativeInstall()
       if (installed) return
-      if (scenario === 'android-manual' || scenario === 'android-installable') {
-        setExpanded(true)
-        return
-      }
+      setExpanded(true)
+      return
     }
 
     if (scenario === 'kakao') {
