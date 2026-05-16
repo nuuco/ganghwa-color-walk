@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { PencilIcon } from '../ui/PencilIcon'
 import { ThemeColorLabel } from '../ui/ThemeColorLabel'
 
 interface WalkHeaderProps {
@@ -14,25 +15,6 @@ interface WalkHeaderProps {
 function isValidSheetTitle(title: string): boolean {
   const trimmed = title.trim()
   return trimmed.length >= 1 && trimmed.length <= 20
-}
-
-function TitleEditPencilIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-      className="shrink-0"
-    >
-      <path d="M11.333 2.667 13.333 4.667 5.333 12.667H3.333V10.667L11.333 2.667Z" />
-    </svg>
-  )
 }
 
 export function WalkHeader({
@@ -125,7 +107,7 @@ export function WalkHeader({
             >
               <span className="min-w-0 truncate">{sheetTitle}</span>
               <span className="ml-1.5 shrink-0 text-outline">
-                <TitleEditPencilIcon />
+                <PencilIcon />
               </span>
             </button>
           ) : (

@@ -1,5 +1,7 @@
 import { useRef, useState } from 'react'
 import { AppBar } from '../components/layout/AppBar'
+import { AppBarAction } from '../components/layout/AppBarAction'
+import { PencilIcon } from '../components/ui/PencilIcon'
 import { CompleteView } from '../components/complete/CompleteView'
 import { PostcardPreview } from '../components/complete/PostcardPreview'
 import { SummaryBanner } from '../components/complete/SummaryBanner'
@@ -135,14 +137,10 @@ export function ViewPage() {
         showBack
         onBack={() => setStep('archive')}
         rightSlot={
-          <button
-            type="button"
-            onClick={handleEdit}
-            disabled={exporting}
-            className="px-2 py-1 text-sm font-semibold text-on-surface underline underline-offset-4 disabled:opacity-50"
-          >
+          <AppBarAction onClick={handleEdit} disabled={exporting} aria-label="수정">
+            <PencilIcon size={14} className="text-outline" />
             수정
-          </button>
+          </AppBarAction>
         }
       />
       <CompleteView>

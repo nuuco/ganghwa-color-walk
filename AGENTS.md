@@ -30,3 +30,4 @@
 - S04 엽서 헤드: postcardHeadline 입력 제거·sheetTitle 표시·카카오 설명 themeLabel만
 - S04 축하 배너: 제목·색·날짜 제거·「오늘의 컬러워크를 완성했어요!」텍스트만
 - 완성 후 수정: 9/9 재완성→view·DnD 완성·하단 「완성 화면 보기」·뒤로→view(완성 시)
+- S04 수정 버튼: AppBarAction surface-high 칩·PencilIcon
