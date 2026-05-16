@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { AppBar } from '../components/layout/AppBar'
 import { CompleteView } from '../components/complete/CompleteView'
 import { PostcardPreview } from '../components/complete/PostcardPreview'
@@ -15,15 +15,6 @@ import {
 import { useOnlineStatus } from '../hooks/useOnlineStatus'
 import { isKakaoConfigured, shareKakaoFeed } from '../lib/kakao'
 
-function isoToDateInput(iso?: string): string {
-  if (!iso) return new Date().toISOString().slice(0, 10)
-  return iso.slice(0, 10)
-}
-
-function dateInputToIso(date: string): string {
-  return new Date(`${date}T12:00:00`).toISOString()
-}
-
 function getAppShareUrl(sheetId: string): string {
   const base = import.meta.env.VITE_APP_URL?.trim().replace(/\/$/, '')
   if (!base) return window.location.href
@@ -38,19 +29,12 @@ async function capturePostcardBlob(root: HTMLElement): Promise<Blob> {
 }
 
 export function ViewPage() {
-  const { getActiveSheet, setStep, updateSheet, setActiveSheetId } = useApp()
+  const { getActiveSheet, setStep, setActiveSheetId } = useApp()
   const isOnline = useOnlineStatus()
   const sheet = getActiveSheet()
   const postcardRef = useRef<HTMLElement>(null)
-  const [headline, setHeadline] = useState(sheet?.postcardHeadline ?? '')
   const [exporting, setExporting] = useState(false)
   const [statusMessage, setStatusMessage] = useState<string | undefined>()
-
-  useEffect(() => {
-    if (sheet) {
-      setHeadline(sheet.postcardHeadline)
-    }
-  }, [sheet])
 
   if (!sheet) {
     return (
@@ -62,7 +46,6 @@ export function ViewPage() {
     )
   }
 
-  const dateValue = isoToDateInput(sheet.completedAt ?? sheet.updatedAt)
   const exportDateIso = sheet.completedAt ?? sheet.updatedAt
   const kakaoConfigured = isKakaoConfigured()
   const kakaoDisabled = !kakaoConfigured || !isOnline
@@ -105,7 +88,7 @@ export function ViewPage() {
     try {
       await shareKakaoFeed({
         title: sheet.sheetTitle,
-        description: `${sheet.themeLabel} · ${headline.trim() || sheet.themeLabel}`,
+        description: sheet.themeLabel,
         url: getAppShareUrl(sheet.id),
       })
     } catch (err) {
@@ -163,26 +146,9 @@ export function ViewPage() {
         }
       />
       <CompleteView>
-        <SummaryBanner
-          sheetTitle={sheet.sheetTitle}
-          themeLabel={sheet.themeLabel}
-          dateValue={dateValue}
-          onDateChange={(d) => updateSheet(sheet.id, { completedAt: dateInputToIso(d) })}
-        />
+        <SummaryBanner />
         <div className="px-page">
-          <PostcardPreview ref={postcardRef} sheet={sheet} headline={headline} />
-        </div>
-        <div className="px-page">
-          <label className="mb-1 block text-xs text-on-surface-variant">엽서 헤드라인</label>
-          <input
-            type="text"
-            value={headline}
-            onChange={(e) => {
-              setHeadline(e.target.value)
-              updateSheet(sheet.id, { postcardHeadline: e.target.value })
-            }}
-            className="w-full rounded-xl border border-outline-variant/50 bg-surface px-4 py-3"
-          />
+          <PostcardPreview ref={postcardRef} sheet={sheet} />
         </div>
         <ExportActions
           onSave={handleSave}

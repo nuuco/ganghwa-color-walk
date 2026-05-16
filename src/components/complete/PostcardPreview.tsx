@@ -5,7 +5,6 @@ import type { ColorWalkSheet } from '../../types/sheet'
 
 interface PostcardPreviewProps {
   sheet: ColorWalkSheet
-  headline: string
 }
 
 function formatPostcardDate(iso?: string): string {
@@ -19,9 +18,9 @@ function formatPostcardDate(iso?: string): string {
 }
 
 export const PostcardPreview = forwardRef<HTMLElement, PostcardPreviewProps>(
-  function PostcardPreview({ sheet, headline }, ref) {
+  function PostcardPreview({ sheet }, ref) {
     const cellCount = sheet.rows * sheet.cols
-    const displayHeadline = headline.trim() || sheet.themeLabel
+    const displayTitle = sheet.sheetTitle.trim() || sheet.themeLabel
     const completedLabel = formatPostcardDate(sheet.completedAt ?? sheet.updatedAt)
 
     return (
@@ -47,7 +46,7 @@ export const PostcardPreview = forwardRef<HTMLElement, PostcardPreviewProps>(
           </span>
         </header>
 
-        <h2 className="mb-4 text-xl font-bold leading-snug">{displayHeadline}</h2>
+        <h2 className="mb-4 text-xl font-bold leading-snug">{displayTitle}</h2>
 
         <div
           className="grid"

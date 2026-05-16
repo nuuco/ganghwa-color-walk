@@ -27,3 +27,5 @@
 - S01 아카이브: sticky PageHeader·보기 토글(간략 기본·벤토 3×3)·localStorage 유지
 - S04 수정 버튼: AppBar 우측 상단 배치·ExportActions 하단 제거
 - walk 헤더 제목 편집: WalkHeader 탭 인라인(1~20자)·연필 아이콘·편집 시 흰 밑줄·회색 얇은 글씨
+- S04 엽서 헤드: postcardHeadline 입력 제거·sheetTitle 표시·카카오 설명 themeLabel만
+- S04 축하 배너: 제목·색·날짜 제거·「오늘의 컬러워크를 완성했어요!」텍스트만
