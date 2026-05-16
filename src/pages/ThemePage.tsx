@@ -47,8 +47,8 @@ export function ThemePage() {
     document.documentElement.style.setProperty('--theme-color', color)
   }
 
-  const handleCta = () => {
-    const id = createSheetFromDraft()
+  const handleCta = async () => {
+    const id = await createSheetFromDraft()
     if (id) document.documentElement.style.setProperty('--theme-color', themeDraft.themeColor)
   }
 

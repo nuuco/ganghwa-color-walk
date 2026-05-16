@@ -22,6 +22,7 @@ function AppShell() {
     confirmDelete,
     openCaptureSheet,
     openConfirmDelete,
+    setCellFromFile,
   } = useApp()
 
   const sheet = getActiveSheet()
@@ -35,7 +36,14 @@ function AppShell() {
       {step === 'walk' && <WalkPage />}
       {step === 'view' && <ViewPage />}
 
-      <CaptureSourceSheet open={captureSheetOpen} onClose={closeCaptureSheet} />
+      <CaptureSourceSheet
+        open={captureSheetOpen}
+        onClose={closeCaptureSheet}
+        onPick={async (file) => {
+          await setCellFromFile(file)
+          closeCaptureSheet()
+        }}
+      />
       <CellDetailModal
         open={cellDetailOpen}
         imageUrl={activeCell?.imageUrl}

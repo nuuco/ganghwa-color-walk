@@ -20,12 +20,7 @@ export function SheetCard({ sheet, onOpen, onDelete }: SheetCardProps) {
   const total = sheet.rows * sheet.cols
   const progress = total > 0 ? Math.round((sheet.filledCount / total) * 100) : 0
   const dateLabel = formatDate(sheet.completedAt ?? sheet.updatedAt)
-  const badge =
-    sheet.status === 'completed'
-      ? '완성'
-      : sheet.status === 'in_progress'
-        ? '진행 중'
-        : '임시'
+  const badge = sheet.status === 'completed' ? '완성' : '임시저장'
 
   return (
     <article className="rounded-2xl bg-surface p-4">

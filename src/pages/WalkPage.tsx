@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { AppBar } from '../components/layout/AppBar'
 import { DynamicGrid } from '../components/grid/DynamicGrid'
 import { WalkHeader } from '../components/walk/WalkHeader'
@@ -7,6 +7,7 @@ import { WalkJournal } from '../components/walk/WalkJournal'
 import { WalkProgressFooter } from '../components/walk/WalkProgressFooter'
 import { useApp } from '../context/AppContext'
 import { DEFAULT_CELL_COUNT } from '../config/grid'
+import { useDebouncedCallback } from '../hooks/useDebouncedCallback'
 
 export function WalkPage() {
   const {
@@ -15,15 +16,35 @@ export function WalkPage() {
     updateSheet,
     openCaptureSheet,
     openCellDetail,
+    fileError,
+    clearFileError,
   } = useApp()
 
   const sheet = getActiveSheet()
+  const [noteStart, setNoteStart] = useState('')
+  const [noteReflection, setNoteReflection] = useState('')
 
   useEffect(() => {
     if (sheet) {
+      setNoteStart(sheet.noteStart)
+      setNoteReflection(sheet.noteReflection)
       document.documentElement.style.setProperty('--theme-color', sheet.themeColor)
     }
-  }, [sheet])
+  }, [sheet?.id, sheet?.noteStart, sheet?.noteReflection, sheet?.themeColor])
+
+  const debouncedPersistNotes = useDebouncedCallback(
+    (patch: { noteStart?: string; noteReflection?: string }) => {
+      if (!sheet) return
+      void updateSheet(sheet.id, patch)
+    },
+    300,
+  )
+
+  useEffect(() => {
+    if (!fileError) return
+    const timer = setTimeout(() => clearFileError(), 4000)
+    return () => clearTimeout(timer)
+  }, [fileError, clearFileError])
 
   if (!sheet) {
     return (
@@ -35,6 +56,7 @@ export function WalkPage() {
       </div>
     )
   }
+
 
   const total = sheet.rows * sheet.cols
 
@@ -48,11 +70,15 @@ export function WalkPage() {
 
   return (
     <div className="flex min-h-dvh flex-col" style={{ ['--theme-color' as string]: sheet.themeColor }}>
-      <AppBar
-        title="산책"
-        showBack
-        onBack={() => setStep('archive')}
-      />
+      {fileError ? (
+        <div
+          role="alert"
+          className="fixed left-1/2 top-4 z-[60] w-[calc(100%-2.5rem)] max-w-app -translate-x-1/2 rounded-xl bg-red-600/95 px-4 py-3 text-center text-sm text-white shadow-lg"
+        >
+          {fileError}
+        </div>
+      ) : null}
+      <AppBar title="산책" showBack onBack={() => setStep('archive')} />
       <WalkHeader
         sheetTitle={sheet.sheetTitle}
         themeLabel={sheet.themeLabel}
@@ -62,20 +88,22 @@ export function WalkPage() {
       <ThemeHintBar themeLabel={sheet.themeLabel} />
       <WalkJournal
         label="산책 시작"
-        value={sheet.noteStart}
+        value={noteStart}
         placeholder="오늘 산책을 시작하며..."
-        onChange={(v) => updateSheet(sheet.id, { noteStart: v })}
+        onChange={(v) => {
+          setNoteStart(v)
+          debouncedPersistNotes({ noteStart: v })
+        }}
       />
-      <DynamicGrid
-        cells={sheet.cells}
-        themeColor={sheet.themeColor}
-        onCellClick={handleCellClick}
-      />
+      <DynamicGrid cells={sheet.cells} themeColor={sheet.themeColor} onCellClick={handleCellClick} />
       <WalkJournal
         label="돌아보며"
-        value={sheet.noteReflection}
+        value={noteReflection}
         placeholder="산책을 마치며..."
-        onChange={(v) => updateSheet(sheet.id, { noteReflection: v })}
+        onChange={(v) => {
+          setNoteReflection(v)
+          debouncedPersistNotes({ noteReflection: v })
+        }}
       />
       <WalkProgressFooter
         filledCount={sheet.filledCount}

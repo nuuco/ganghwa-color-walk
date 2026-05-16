@@ -1,0 +1,292 @@
+import localforage from 'localforage'
+import { DEFAULT_CELL_COUNT, DEFAULT_COLS, DEFAULT_ROWS } from '../config/grid'
+import type { ColorWalkSheet, SheetCell, SheetsIndex, StoredSheetMeta } from '../types/sheet'
+import { getOrCreateObjectUrl, revokeObjectUrl } from './blobUrls'
+import {
+  cellBlobKey,
+  indexToRowCol,
+  parseRowColKey,
+  rowColKey,
+  rowColToIndex,
+  thumbBlobKey,
+} from './cellCoords'
+
+const INDEX_KEY = 'color-walk-sheets-index-v1'
+
+function sheetMetaKey(sheetId: string): string {
+  return `sheet-${sheetId}`
+}
+
+function nowIso(): string {
+  return new Date().toISOString()
+}
+
+function createEmptyCells(count = DEFAULT_CELL_COUNT): SheetCell[] {
+  return Array.from({ length: count }, (_, index) => ({ index }))
+}
+
+export async function getIndex(): Promise<SheetsIndex> {
+  const index = await localforage.getItem<SheetsIndex>(INDEX_KEY)
+  return index ?? { version: 1, sheetIds: [] }
+}
+
+async function saveIndex(index: SheetsIndex): Promise<void> {
+  await localforage.setItem(INDEX_KEY, index)
+}
+
+export async function getSheetMeta(sheetId: string): Promise<StoredSheetMeta | null> {
+  return localforage.getItem<StoredSheetMeta>(sheetMetaKey(sheetId))
+}
+
+export async function saveSheetMeta(meta: StoredSheetMeta): Promise<void> {
+  await localforage.setItem(sheetMetaKey(meta.id), meta)
+}
+
+export async function getCellBlob(sheetId: string, row: number, col: number): Promise<Blob | null> {
+  return localforage.getItem<Blob>(cellBlobKey(sheetId, row, col))
+}
+
+export async function saveCellBlob(
+  sheetId: string,
+  row: number,
+  col: number,
+  blob: Blob,
+): Promise<void> {
+  await localforage.setItem(cellBlobKey(sheetId, row, col), blob)
+}
+
+export async function removeCellBlob(sheetId: string, row: number, col: number): Promise<void> {
+  await localforage.removeItem(cellBlobKey(sheetId, row, col))
+}
+
+export async function saveThumbBlob(sheetId: string, blob: Blob): Promise<void> {
+  await localforage.setItem(thumbBlobKey(sheetId), blob)
+}
+
+export async function removeThumbBlob(sheetId: string): Promise<void> {
+  await localforage.removeItem(thumbBlobKey(sheetId))
+}
+
+async function sortIndexByUpdatedAt(index: SheetsIndex): Promise<SheetsIndex> {
+  const metas: StoredSheetMeta[] = []
+  for (const id of index.sheetIds) {
+    const meta = await getSheetMeta(id)
+    if (meta) metas.push(meta)
+  }
+  metas.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+  return { version: 1, sheetIds: metas.map((m) => m.id) }
+}
+
+export async function countCompletedSheets(): Promise<number> {
+  const index = await getIndex()
+  let count = 0
+  for (const id of index.sheetIds) {
+    const meta = await getSheetMeta(id)
+    if (meta?.status === 'completed') count += 1
+  }
+  return count
+}
+
+export async function hydrateSheet(meta: StoredSheetMeta): Promise<ColorWalkSheet> {
+  const cells = createEmptyCells(meta.rows * meta.cols)
+  for (const [rc, ref] of Object.entries(meta.cells)) {
+    const { row, col } = parseRowColKey(rc)
+    const blob = await localforage.getItem<Blob>(ref.blobKey)
+    if (!blob) continue
+    const index = rowColToIndex(row, col, meta.cols)
+    cells[index] = {
+      index,
+      imageUrl: getOrCreateObjectUrl(blob, ref.blobKey),
+    }
+  }
+
+  return {
+    id: meta.id,
+    sheetTitle: meta.sheetTitle,
+    themeId: meta.themeId,
+    themeLabel: meta.themeLabel,
+    themeColor: meta.themeColor,
+    status: meta.status,
+    cells,
+    filledCount: meta.filledCount,
+    rows: meta.rows,
+    cols: meta.cols,
+    noteStart: meta.noteStart ?? '',
+    noteReflection: meta.noteReflection ?? '',
+    walkOrdinal: meta.walkOrdinal,
+    postcardHeadline: meta.postcardHeadline ?? meta.themeLabel,
+    completedAt: meta.completedAt,
+    updatedAt: meta.updatedAt,
+    createdAt: meta.createdAt,
+  }
+}
+
+export async function loadAllSheets(): Promise<ColorWalkSheet[]> {
+  const index = await sortIndexByUpdatedAt(await getIndex())
+  const sheets: ColorWalkSheet[] = []
+  for (const id of index.sheetIds) {
+    const meta = await getSheetMeta(id)
+    if (meta) sheets.push(await hydrateSheet(meta))
+  }
+  return sheets
+}
+
+export async function createSheetMeta(
+  input: Pick<
+    StoredSheetMeta,
+    'id' | 'sheetTitle' | 'themeId' | 'themeLabel' | 'themeColor' | 'postcardHeadline'
+  >,
+): Promise<StoredSheetMeta> {
+  const ts = nowIso()
+  const meta: StoredSheetMeta = {
+    version: 1,
+    id: input.id,
+    sheetTitle: input.sheetTitle,
+    themeId: input.themeId,
+    themeLabel: input.themeLabel,
+    themeColor: input.themeColor,
+    postcardHeadline: input.postcardHeadline,
+    rows: DEFAULT_ROWS,
+    cols: DEFAULT_COLS,
+    status: 'in_progress',
+    filledCount: 0,
+    cells: {},
+    createdAt: ts,
+    updatedAt: ts,
+  }
+
+  await saveSheetMeta(meta)
+  const index = await getIndex()
+  const sheetIds = [meta.id, ...index.sheetIds.filter((id) => id !== meta.id)]
+  await saveIndex(await sortIndexByUpdatedAt({ version: 1, sheetIds }))
+  return meta
+}
+
+export async function deleteSheetFromStorage(sheetId: string): Promise<void> {
+  const meta = await getSheetMeta(sheetId)
+  if (meta) {
+    for (const ref of Object.values(meta.cells)) {
+      revokeObjectUrl(ref.blobKey)
+      await localforage.removeItem(ref.blobKey)
+    }
+    if (meta.thumbnailKey) {
+      revokeObjectUrl(meta.thumbnailKey)
+      await localforage.removeItem(meta.thumbnailKey)
+    }
+  }
+  await localforage.removeItem(sheetMetaKey(sheetId))
+  const index = await getIndex()
+  await saveIndex({
+    version: 1,
+    sheetIds: index.sheetIds.filter((id) => id !== sheetId),
+  })
+}
+
+export async function persistSheetPatch(
+  sheetId: string,
+  patch: Partial<StoredSheetMeta>,
+): Promise<StoredSheetMeta | null> {
+  const meta = await getSheetMeta(sheetId)
+  if (!meta) return null
+  const next: StoredSheetMeta = { ...meta, ...patch, updatedAt: nowIso() }
+  await saveSheetMeta(next)
+  const index = await getIndex()
+  if (index.sheetIds.includes(sheetId)) {
+    await saveIndex(await sortIndexByUpdatedAt(index))
+  }
+  return next
+}
+
+export async function setCellFromBlob(
+  sheetId: string,
+  cellIndex: number,
+  blob: Blob,
+): Promise<{ meta: StoredSheetMeta; completed: boolean }> {
+  const meta = await getSheetMeta(sheetId)
+  if (!meta) throw new Error('Sheet not found')
+
+  const { row, col } = indexToRowCol(cellIndex, meta.cols)
+  const rc = rowColKey(row, col)
+  const blobKey = cellBlobKey(sheetId, row, col)
+
+  if (meta.cells[rc]) {
+    revokeObjectUrl(blobKey)
+  }
+
+  await saveCellBlob(sheetId, row, col, blob)
+
+  const cells = { ...meta.cells, [rc]: { blobKey } }
+  const filledCount = Object.keys(cells).length
+  const wasCompleted = meta.status === 'completed'
+
+  let status = meta.status
+  let walkOrdinal = meta.walkOrdinal
+  let completedAt = meta.completedAt
+
+  if (filledCount >= meta.rows * meta.cols && status !== 'completed') {
+    status = 'completed'
+    walkOrdinal = meta.walkOrdinal ?? (await countCompletedSheets()) + 1
+    completedAt = meta.completedAt ?? nowIso()
+  }
+
+  let thumbnailKey = meta.thumbnailKey
+  if (!thumbnailKey) {
+    thumbnailKey = thumbBlobKey(sheetId)
+    await saveThumbBlob(sheetId, blob)
+  }
+
+  const next: StoredSheetMeta = {
+    ...meta,
+    cells,
+    filledCount,
+    status,
+    walkOrdinal,
+    completedAt,
+    thumbnailKey,
+    updatedAt: nowIso(),
+  }
+  await saveSheetMeta(next)
+  const index = await getIndex()
+  await saveIndex(await sortIndexByUpdatedAt(index))
+
+  const justCompleted = !wasCompleted && status === 'completed'
+  return { meta: next, completed: justCompleted }
+}
+
+export async function clearCellFromStorage(
+  sheetId: string,
+  cellIndex: number,
+): Promise<StoredSheetMeta | null> {
+  const meta = await getSheetMeta(sheetId)
+  if (!meta) return null
+
+  const { row, col } = indexToRowCol(cellIndex, meta.cols)
+  const rc = rowColKey(row, col)
+  const ref = meta.cells[rc]
+  if (!ref) return meta
+
+  revokeObjectUrl(ref.blobKey)
+  await removeCellBlob(sheetId, row, col)
+
+  const cells = { ...meta.cells }
+  delete cells[rc]
+  const filledCount = Object.keys(cells).length
+
+  let status = meta.status
+  if (status === 'completed' && filledCount < meta.rows * meta.cols) {
+    status = 'in_progress'
+  }
+
+  const next: StoredSheetMeta = {
+    ...meta,
+    cells,
+    filledCount,
+    status,
+    updatedAt: nowIso(),
+  }
+  await saveSheetMeta(next)
+  const index = await getIndex()
+  await saveIndex(await sortIndexByUpdatedAt(index))
+  return next
+}
+
