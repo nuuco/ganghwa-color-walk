@@ -29,9 +29,17 @@ export function GridCell({ index, variant, imageUrl, themeColor, onClick }: Grid
         </>
       ) : (
         <div
-          className="h-full w-full border-2 border-dashed"
+          className="flex h-full w-full items-center justify-center border-2 border-dashed"
           style={{ borderColor: themeColor }}
-        />
+        >
+          <span
+            className="select-none text-3xl font-light leading-none"
+            style={{ color: themeColor }}
+            aria-hidden
+          >
+            +
+          </span>
+        </div>
       )}
     </button>
   )

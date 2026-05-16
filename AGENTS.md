@@ -22,3 +22,4 @@
 - InstallPromptBanner TS2367: Android 분기 중복 `android-installable` 비교 제거·네이티브 설치 실패 시 바로 단계 펼침
 - 공통 버튼·토글 고정색: `bg-primary`(#fff)만 사용·`--theme-color` DOM 주입·ExportActions 테마 배경 제거
 - 중앙 컬러 토글 ON: `bg-on-surface`+`bg-background` 손잡이(테마색·흰-on-흰 제거)
+- S03 빈 GridCell: 점선 테두리+중앙 `+`(themeColor, FIGMA GridCell Empty)
