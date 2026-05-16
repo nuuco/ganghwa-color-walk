@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
+import { ThemeEditModal } from '../overlays/ThemeEditModal'
 import { PencilIcon } from '../ui/PencilIcon'
-import { ThemeColorLabel } from '../ui/ThemeColorLabel'
+import { WalkThemeDisplay } from './WalkThemeDisplay'
 
 interface WalkHeaderProps {
   sheetTitle: string
@@ -10,6 +11,8 @@ interface WalkHeaderProps {
   total: number
   titleEditable?: boolean
   onTitleChange?: (title: string) => void
+  themeEditable?: boolean
+  onThemeChange?: (patch: { themeLabel: string; themeColor: string }) => void
 }
 
 function isValidSheetTitle(title: string): boolean {
@@ -25,9 +28,12 @@ export function WalkHeader({
   total,
   titleEditable = false,
   onTitleChange,
+  themeEditable = false,
+  onThemeChange,
 }: WalkHeaderProps) {
   const [editingTitle, setEditingTitle] = useState(false)
   const [draftTitle, setDraftTitle] = useState(sheetTitle)
+  const [themeModalOpen, setThemeModalOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const skipBlurCommitRef = useRef(false)
 
@@ -63,7 +69,7 @@ export function WalkHeader({
     commitTitle()
   }
 
-  const startEditing = () => {
+  const startEditingTitle = () => {
     if (!titleEditable || editingTitle) return
     skipBlurCommitRef.current = true
     setDraftTitle(sheetTitle)
@@ -73,7 +79,7 @@ export function WalkHeader({
   return (
     <div className="px-page pb-2 pt-1">
       <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
+        <div className="flex min-w-0 flex-1 flex-col gap-3">
           {editingTitle ? (
             <div className="w-full border-b border-primary pb-0.5">
               <input
@@ -101,7 +107,7 @@ export function WalkHeader({
             <button
               type="button"
               onPointerDown={(e) => e.preventDefault()}
-              onClick={startEditing}
+              onClick={startEditingTitle}
               aria-label="제목 편집"
               className="inline-flex max-w-full min-w-0 items-center border-0 bg-transparent p-0 text-left text-xl font-bold"
             >
@@ -113,16 +119,26 @@ export function WalkHeader({
           ) : (
             <h2 className="truncate text-xl font-bold">{sheetTitle}</h2>
           )}
-          <ThemeColorLabel
+
+          <WalkThemeDisplay
             themeLabel={themeLabel}
             themeColor={themeColor}
-            className="mt-1"
+            editable={themeEditable}
+            onEditClick={() => setThemeModalOpen(true)}
           />
         </div>
         <span className="shrink-0 rounded-full bg-surface-high px-3 py-1 text-sm font-medium">
           {filledCount}/{total}
         </span>
       </div>
+
+      <ThemeEditModal
+        open={themeModalOpen}
+        themeLabel={themeLabel}
+        themeColor={themeColor}
+        onClose={() => setThemeModalOpen(false)}
+        onSave={(patch) => onThemeChange?.(patch)}
+      />
     </div>
   )
 }

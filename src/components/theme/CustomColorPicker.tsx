@@ -5,6 +5,8 @@ interface CustomColorPickerProps {
   onLabelChange: (label: string) => void
   labelError?: string
   labelValid?: boolean
+  /** 모달 등 내부 임베드 시 바깥 여백·섹션 타이틀 생략 */
+  embedded?: boolean
 }
 
 export function CustomColorPicker({
@@ -14,6 +16,7 @@ export function CustomColorPicker({
   onLabelChange,
   labelError,
   labelValid,
+  embedded = false,
 }: CustomColorPickerProps) {
   const borderClass = labelError
     ? 'border-red-500'
@@ -22,8 +25,14 @@ export function CustomColorPicker({
       : 'border-outline-variant'
 
   return (
-    <section className="mx-page rounded-2xl bg-surface-high p-5">
-      <h3 className="mb-4 text-sm font-semibold text-on-surface-variant">직접 선택</h3>
+    <section
+      className={
+        embedded ? 'rounded-2xl bg-surface-high p-4' : 'mx-page rounded-2xl bg-surface-high p-5'
+      }
+    >
+      {embedded ? null : (
+        <h3 className="mb-4 text-sm font-semibold text-on-surface-variant">직접 선택</h3>
+      )}
       <div className="flex flex-col items-center gap-4">
         <label className="relative block h-28 w-28 cursor-pointer overflow-hidden rounded-full border-2 border-outline-variant/50">
           <span

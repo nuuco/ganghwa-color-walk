@@ -114,6 +114,10 @@ export function WalkPage() {
         total={total}
         titleEditable
         onTitleChange={(title) => void updateSheet(sheet.id, { sheetTitle: title })}
+        themeEditable
+        onThemeChange={({ themeLabel, themeColor }) =>
+          void updateSheet(sheet.id, { themeLabel, themeColor, themeId: 'custom' })
+        }
       />
       <ThemeHintBar themeLabel={sheet.themeLabel} themeColor={sheet.themeColor} />
       <CenterColorSlotToggle
