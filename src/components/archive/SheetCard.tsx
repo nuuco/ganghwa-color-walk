@@ -2,6 +2,7 @@ import type { ArchiveViewMode } from '../../hooks/useArchiveViewMode'
 import type { ColorWalkSheet } from '../../types/sheet'
 import { DEFAULT_COLS, DEFAULT_ROWS, getEffectiveFilledCount, isCenterColorSlot } from '../../config/grid'
 import { CenterColorSlotCell } from '../grid/CenterColorSlotCell'
+import { ThemeColorLabel } from '../ui/ThemeColorLabel'
 
 interface SheetCardProps {
   sheet: ColorWalkSheet
@@ -50,12 +51,7 @@ export function SheetCard({ sheet, viewMode, onOpen, onDelete }: SheetCardProps)
             </span>
           </div>
           <div className="mt-1 flex items-center gap-2 text-sm text-on-surface-variant">
-            <span
-              className="h-4 w-4 shrink-0 rounded-full border border-outline-variant/40"
-              style={{ backgroundColor: sheet.themeColor }}
-              aria-hidden
-            />
-            <span className="truncate">{sheet.themeLabel}</span>
+            <ThemeColorLabel themeLabel={sheet.themeLabel} themeColor={sheet.themeColor} />
             {dateLabel ? <span className="shrink-0">· {dateLabel}</span> : null}
             {viewMode === 'compact' ? (
               <span className="shrink-0 font-medium tabular-nums text-on-surface">

@@ -105,10 +105,11 @@ export function WalkPage() {
       <WalkHeader
         sheetTitle={sheet.sheetTitle}
         themeLabel={sheet.themeLabel}
+        themeColor={sheet.themeColor}
         filledCount={effectiveFilled}
         total={total}
       />
-      <ThemeHintBar themeLabel={sheet.themeLabel} />
+      <ThemeHintBar themeLabel={sheet.themeLabel} themeColor={sheet.themeColor} />
       <CenterColorSlotToggle
         enabled={sheet.centerColorSlot}
         onChange={(enabled) => void setCenterColorSlot(sheet.id, enabled)}
