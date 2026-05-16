@@ -2,7 +2,6 @@ interface ExportActionsProps {
   onSave: () => void
   onKakaoShare: () => void
   onImageShare: () => void
-  onEdit: () => void
   busy?: boolean
   kakaoDisabled?: boolean
   statusMessage?: string
@@ -12,7 +11,6 @@ export function ExportActions({
   onSave,
   onKakaoShare,
   onImageShare,
-  onEdit,
   busy = false,
   kakaoDisabled = false,
   statusMessage,
@@ -49,14 +47,6 @@ export function ExportActions({
         className="flex h-12 w-full items-center justify-center rounded-xl border border-outline-variant/50 text-sm font-medium disabled:opacity-50"
       >
         이미지 공유
-      </button>
-      <button
-        type="button"
-        onClick={onEdit}
-        disabled={disabled}
-        className="flex h-12 w-full items-center justify-center rounded-xl text-sm text-on-surface-variant underline disabled:opacity-50"
-      >
-        수정
       </button>
     </section>
   )

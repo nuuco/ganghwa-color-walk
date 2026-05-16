@@ -140,9 +140,28 @@ export function ViewPage() {
     }
   }
 
+  const handleEdit = () => {
+    setActiveSheetId(sheet.id)
+    setStep('walk')
+  }
+
   return (
     <div className="flex min-h-dvh flex-col pb-8">
-      <AppBar title="완성된 컬러워크" showBack onBack={() => setStep('archive')} />
+      <AppBar
+        title="완성된 컬러워크"
+        showBack
+        onBack={() => setStep('archive')}
+        rightSlot={
+          <button
+            type="button"
+            onClick={handleEdit}
+            disabled={exporting}
+            className="px-2 py-1 text-sm font-semibold text-on-surface underline underline-offset-4 disabled:opacity-50"
+          >
+            수정
+          </button>
+        }
+      />
       <CompleteView>
         <SummaryBanner
           sheetTitle={sheet.sheetTitle}
@@ -169,10 +188,6 @@ export function ViewPage() {
           onSave={handleSave}
           onKakaoShare={handleKakao}
           onImageShare={handleImageShare}
-          onEdit={() => {
-            setActiveSheetId(sheet.id)
-            setStep('walk')
-          }}
           busy={exporting}
           kakaoDisabled={kakaoDisabled}
           statusMessage={statusMessage ?? offlineKakaoStatus}

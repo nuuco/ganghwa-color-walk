@@ -25,3 +25,5 @@
 - S03 빈 GridCell: 점선 테두리+중앙 `+`(themeColor, FIGMA GridCell Empty)
 - Walk 그리드 DnD: 채워진 칸 핸들 드래그·빈/채움 칸 드롭·`moveOrSwapCells` Blob 스왑·중앙 컬러 슬롯 ON 시 중앙 제외
 - S01 아카이브: sticky PageHeader·보기 토글(간략 기본·벤토 3×3)·localStorage 유지
+- S04 수정 버튼: AppBar 우측 상단 배치·ExportActions 하단 제거
+- walk 헤더 제목 편집: WalkHeader 탭 인라인(1~20자)·연필 아이콘·편집 시 흰 밑줄·회색 얇은 글씨
