@@ -1,5 +1,4 @@
 import { forwardRef } from 'react'
-import { getCenterCellIndex } from '../../config/grid'
 import type { ColorWalkSheet } from '../../types/sheet'
 
 interface PostcardPreviewProps {
@@ -17,13 +16,8 @@ function formatPostcardDate(iso?: string): string {
   }).format(date)
 }
 
-function normalizeHex(hex: string): string {
-  return hex.trim().toUpperCase()
-}
-
 export const PostcardPreview = forwardRef<HTMLElement, PostcardPreviewProps>(
   function PostcardPreview({ sheet, headline }, ref) {
-    const centerIndex = getCenterCellIndex(sheet.rows, sheet.cols)
     const cellCount = sheet.rows * sheet.cols
     const displayHeadline = headline.trim() || sheet.themeLabel
     const completedLabel = formatPostcardDate(sheet.completedAt ?? sheet.updatedAt)
@@ -60,32 +54,21 @@ export const PostcardPreview = forwardRef<HTMLElement, PostcardPreviewProps>(
             gap: 'var(--grid-gap)',
           }}
         >
-          {sheet.cells.slice(0, cellCount).map((cell) => {
-            const isCenter = cell.index === centerIndex
-            return (
-              <div
-                key={cell.index}
-                className="relative aspect-square overflow-hidden rounded-cell bg-surface-high"
-              >
-                {cell.imageUrl ? (
-                  <img
-                    src={cell.imageUrl}
-                    alt=""
-                    className="h-full w-full object-cover"
-                    crossOrigin="anonymous"
-                  />
-                ) : null}
-                {isCenter ? (
-                  <span
-                    className="absolute inset-0 z-10 flex items-center justify-center font-mono text-[10px] font-bold tracking-wide text-white"
-                    style={{ backgroundColor: sheet.themeColor }}
-                  >
-                    {normalizeHex(sheet.themeColor)}
-                  </span>
-                ) : null}
-              </div>
-            )
-          })}
+          {sheet.cells.slice(0, cellCount).map((cell) => (
+            <div
+              key={cell.index}
+              className="relative aspect-square overflow-hidden rounded-cell bg-surface-high"
+            >
+              {cell.imageUrl ? (
+                <img
+                  src={cell.imageUrl}
+                  alt=""
+                  className="h-full w-full object-cover"
+                  crossOrigin="anonymous"
+                />
+              ) : null}
+            </div>
+          ))}
         </div>
 
         <footer className="mt-4 flex items-end justify-between gap-3">
