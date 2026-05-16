@@ -1,5 +1,6 @@
 # Color Walk — 작업 이력
 
+- 개발 계획 repo 반영: `.cursor/plans` → `docs/plan.md` · FIGMA·PAGE 연계 링크 갱신
 - 화면별 구현 체크리스트 초안 추가: `docs/PAGE_IMPLEMENTATION.md` (FIGMA_UI_DESIGN·개발 플랜 연계)
 - Stitch 스크린샷 정리: `screen1~4.png` → `docs/reference/screenshots/` (S01~S04 파일명 변경) · `PAGE_IMPLEMENTATION`·`FIGMA_UI_DESIGN` 연결
 - 타이포 기준 확정: 웹 폰트 **Pretendard + Noto Sans KR** 단일 스택 (`FIGMA_UI_DESIGN` §3.2 · `PAGE_IMPLEMENTATION` 공통)

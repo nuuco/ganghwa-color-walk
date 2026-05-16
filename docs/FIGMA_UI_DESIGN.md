@@ -3,7 +3,7 @@
 > **목적:** Stitch UI 캡처·`DESIGN.md` 토큰을 기준으로 Figma 제작 및 개발 UI 정합 유지  
 > **대상:** UI 디자이너, Figma 제작자, 개발자  
 > **버전:** 2.3 (2026-05-16) — MVP BottomNav 제외·의사결정 반영  
-> **연계:** [개발 계획](/Users/yoong/.cursor/plans/color_walk_개발_99bd134d.plan.md) · [화면별 구현 체크리스트](./PAGE_IMPLEMENTATION.md)
+> **연계:** [개발 계획](./plan.md) · [화면별 구현 체크리스트](./PAGE_IMPLEMENTATION.md)
 
 ### 디자인 소스 (Single Source 권장)
 

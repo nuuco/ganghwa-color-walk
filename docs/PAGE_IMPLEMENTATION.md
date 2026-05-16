@@ -1,7 +1,7 @@
 # Color Walk — 화면별 구현 체크리스트 (초안)
 
 > **용도:** 화면 단위로 구현·QA할 때 펼쳐 보는 **개발 전용** 문서. 비주얼·카피·토큰은 [`FIGMA_UI_DESIGN.md`](./FIGMA_UI_DESIGN.md)를 단일 기준으로 하고, 본 문서는 **동작·상태·데이터·수용 기준**에 집중합니다.  
-> **연계:** [개발 계획(플랜)](/Users/yoong/.cursor/plans/color_walk_개발_99bd134d.plan.md) · [FIGMA_UI_DESIGN.md](./FIGMA_UI_DESIGN.md)
+> **연계:** [개발 계획(플랜)](./plan.md) · [FIGMA_UI_DESIGN.md](./FIGMA_UI_DESIGN.md)
 
 ### 참고 캡처 (저장소 고정)
 
