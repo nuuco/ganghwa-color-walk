@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-background: #131313;
+  --color-surface: #201f1f;
+  --color-surface-high: #2a2a2a;
+  --color-on-surface: #e5e2e1;
+  --color-primary: #ffffff;
+  --color-on-primary: #31312d;
+  --theme-color: #a882e0;
+  --page-margin: 20px;
+  --grid-gap: 6px;
+}
+
+@layer base {
+  html {
+    @apply bg-background text-on-surface font-sans antialiased;
+  }
+
+  body {
+    @apply min-h-dvh;
+    margin: 0;
+  }
+
+  #root {
+    @apply min-h-dvh;
+  }
+
+  button,
+  input,
+  textarea {
+    font: inherit;
+  }
+}

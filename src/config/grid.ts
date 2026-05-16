@@ -1,0 +1,3 @@
+export const DEFAULT_ROWS = 3
+export const DEFAULT_COLS = 3
+export const DEFAULT_CELL_COUNT = DEFAULT_ROWS * DEFAULT_COLS
