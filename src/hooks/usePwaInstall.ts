@@ -5,6 +5,17 @@ import {
   type InstallScenario,
 } from '../lib/pwaInstall'
 
+const INSTALL_DISMISS_KEY = 'color-walk-install-banner-dismissed'
+const AUTO_OPEN_DELAY_MS = 450
+
+function isInstallDismissed(): boolean {
+  try {
+    return sessionStorage.getItem(INSTALL_DISMISS_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+
 export function usePwaInstall() {
   const deferredRef = useRef<BeforeInstallPromptEvent | null>(null)
   const [open, setOpen] = useState(false)
@@ -47,9 +58,26 @@ export function usePwaInstall() {
     setOpen(false)
   }, [])
 
-  const runNativeInstall = useCallback(async () => {
+  const dismissInstallPrompt = useCallback(() => {
+    try {
+      sessionStorage.setItem(INSTALL_DISMISS_KEY, '1')
+    } catch {
+      // sessionStorage unavailable
+    }
+    setOpen(false)
+  }, [])
+
+  const tryAutoOpenInstallPrompt = useCallback(() => {
+    if (isStandaloneDisplay()) return
+    if (isInstallDismissed()) return
+
+    const timer = window.setTimeout(() => setOpen(true), AUTO_OPEN_DELAY_MS)
+    return () => window.clearTimeout(timer)
+  }, [])
+
+  const runNativeInstall = useCallback(async (): Promise<boolean> => {
     const prompt = deferredRef.current
-    if (!prompt) return
+    if (!prompt) return false
 
     setIsInstalling(true)
     try {
@@ -59,7 +87,9 @@ export function usePwaInstall() {
         deferredRef.current = null
         setCanNativeInstall(false)
         setOpen(false)
+        return true
       }
+      return false
     } finally {
       setIsInstalling(false)
     }
@@ -73,6 +103,8 @@ export function usePwaInstall() {
     isInstalling,
     openInstallPrompt,
     closeInstallPrompt,
+    dismissInstallPrompt,
+    tryAutoOpenInstallPrompt,
     runNativeInstall,
   }
 }

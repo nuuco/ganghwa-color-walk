@@ -1,5 +1,4 @@
 import { createContext, useContext, type ReactNode } from 'react'
-import { InstallPromptModal } from '../components/overlays/InstallPromptModal'
 import { usePwaInstall, type PwaInstallState } from '../hooks/usePwaInstall'
 
 const PwaInstallContext = createContext<PwaInstallState | null>(null)
@@ -7,18 +6,7 @@ const PwaInstallContext = createContext<PwaInstallState | null>(null)
 export function PwaInstallProvider({ children }: { children: ReactNode }) {
   const install = usePwaInstall()
 
-  return (
-    <PwaInstallContext.Provider value={install}>
-      {children}
-      <InstallPromptModal
-        open={install.open}
-        scenario={install.scenario}
-        isInstalling={install.isInstalling}
-        onClose={install.closeInstallPrompt}
-        onNativeInstall={install.runNativeInstall}
-      />
-    </PwaInstallContext.Provider>
-  )
+  return <PwaInstallContext.Provider value={install}>{children}</PwaInstallContext.Provider>
 }
 
 export function usePwaInstallContext(): PwaInstallState {
