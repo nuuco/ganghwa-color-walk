@@ -18,7 +18,3 @@ export function parseRowColKey(key: string): { row: number; col: number } {
 export function cellBlobKey(sheetId: string, row: number, col: number): string {
   return `cell-${sheetId}-${row}-${col}`
 }
-
-export function thumbBlobKey(sheetId: string): string {
-  return `thumb-${sheetId}`
-}

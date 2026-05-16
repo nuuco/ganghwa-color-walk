@@ -27,7 +27,6 @@ export interface StoredSheetMeta {
   status: SheetStatus
   filledCount: number
   cells: Record<string, StoredCellRef>
-  thumbnailKey?: string
   createdAt: string
   updatedAt: string
   completedAt?: string

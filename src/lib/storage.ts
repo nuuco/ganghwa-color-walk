@@ -8,7 +8,6 @@ import {
   parseRowColKey,
   rowColKey,
   rowColToIndex,
-  thumbBlobKey,
 } from './cellCoords'
 
 const INDEX_KEY = 'color-walk-sheets-index-v1'
@@ -57,14 +56,6 @@ export async function saveCellBlob(
 
 export async function removeCellBlob(sheetId: string, row: number, col: number): Promise<void> {
   await localforage.removeItem(cellBlobKey(sheetId, row, col))
-}
-
-export async function saveThumbBlob(sheetId: string, blob: Blob): Promise<void> {
-  await localforage.setItem(thumbBlobKey(sheetId), blob)
-}
-
-export async function removeThumbBlob(sheetId: string): Promise<void> {
-  await localforage.removeItem(thumbBlobKey(sheetId))
 }
 
 async function sortIndexByUpdatedAt(index: SheetsIndex): Promise<SheetsIndex> {
@@ -169,10 +160,6 @@ export async function deleteSheetFromStorage(sheetId: string): Promise<void> {
       revokeObjectUrl(ref.blobKey)
       await localforage.removeItem(ref.blobKey)
     }
-    if (meta.thumbnailKey) {
-      revokeObjectUrl(meta.thumbnailKey)
-      await localforage.removeItem(meta.thumbnailKey)
-    }
   }
   await localforage.removeItem(sheetMetaKey(sheetId))
   const index = await getIndex()
@@ -229,12 +216,6 @@ export async function setCellFromBlob(
     completedAt = meta.completedAt ?? nowIso()
   }
 
-  let thumbnailKey = meta.thumbnailKey
-  if (!thumbnailKey) {
-    thumbnailKey = thumbBlobKey(sheetId)
-    await saveThumbBlob(sheetId, blob)
-  }
-
   const next: StoredSheetMeta = {
     ...meta,
     cells,
@@ -242,7 +223,6 @@ export async function setCellFromBlob(
     status,
     walkOrdinal,
     completedAt,
-    thumbnailKey,
     updatedAt: nowIso(),
   }
   await saveSheetMeta(next)
