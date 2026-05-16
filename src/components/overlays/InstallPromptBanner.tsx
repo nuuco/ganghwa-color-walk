@@ -53,7 +53,7 @@ export function InstallPromptBanner({
   const showSteps = expanded && steps !== null
 
   const handleInstall = async () => {
-    if (usesNativeInstall || scenario === 'android-manual' || scenario === 'android-installable') {
+    if (usesNativeInstall || scenario === 'android-manual') {
       const installed = await onNativeInstall()
       if (installed) return
       if (scenario === 'android-manual' || scenario === 'android-installable') {
