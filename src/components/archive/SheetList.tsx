@@ -1,13 +1,15 @@
+import type { ArchiveViewMode } from '../../hooks/useArchiveViewMode'
 import type { ColorWalkSheet } from '../../types/sheet'
 import { SheetCard } from './SheetCard'
 
 interface SheetListProps {
   sheets: ColorWalkSheet[]
+  viewMode: ArchiveViewMode
   onOpenSheet: (sheet: ColorWalkSheet) => void
   onDeleteSheet: (sheetId: string) => void
 }
 
-export function SheetList({ sheets, onOpenSheet, onDeleteSheet }: SheetListProps) {
+export function SheetList({ sheets, viewMode, onOpenSheet, onDeleteSheet }: SheetListProps) {
   const sorted = [...sheets].sort(
     (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
   )
@@ -18,6 +20,7 @@ export function SheetList({ sheets, onOpenSheet, onDeleteSheet }: SheetListProps
         <li key={sheet.id}>
           <SheetCard
             sheet={sheet}
+            viewMode={viewMode}
             onOpen={() => onOpenSheet(sheet)}
             onDelete={() => onDeleteSheet(sheet.id)}
           />

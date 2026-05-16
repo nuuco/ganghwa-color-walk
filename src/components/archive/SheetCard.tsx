@@ -1,9 +1,11 @@
+import type { ArchiveViewMode } from '../../hooks/useArchiveViewMode'
 import type { ColorWalkSheet } from '../../types/sheet'
 import { DEFAULT_COLS, DEFAULT_ROWS, getEffectiveFilledCount, isCenterColorSlot } from '../../config/grid'
 import { CenterColorSlotCell } from '../grid/CenterColorSlotCell'
 
 interface SheetCardProps {
   sheet: ColorWalkSheet
+  viewMode: ArchiveViewMode
   onOpen: () => void
   onDelete: () => void
 }
@@ -17,7 +19,7 @@ function formatDate(iso?: string): string {
   })
 }
 
-export function SheetCard({ sheet, onOpen, onDelete }: SheetCardProps) {
+export function SheetCard({ sheet, viewMode, onOpen, onDelete }: SheetCardProps) {
   const total = sheet.rows * sheet.cols
   const effectiveFilled = getEffectiveFilledCount(sheet)
   const progress = total > 0 ? Math.round((effectiveFilled / total) * 100) : 0
@@ -26,7 +28,14 @@ export function SheetCard({ sheet, onOpen, onDelete }: SheetCardProps) {
 
   return (
     <article className="rounded-2xl bg-surface p-4">
-      <div className="mb-3 flex items-start justify-between gap-2">
+      <div
+        className={[
+          'flex items-start justify-between gap-2',
+          viewMode === 'bento' ? 'mb-3' : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+      >
         <button type="button" onClick={onOpen} className="min-w-0 flex-1 text-left">
           <div className="flex items-center gap-2">
             <h3 className="truncate text-base font-semibold">{sheet.sheetTitle}</h3>
@@ -48,6 +57,11 @@ export function SheetCard({ sheet, onOpen, onDelete }: SheetCardProps) {
             />
             <span className="truncate">{sheet.themeLabel}</span>
             {dateLabel ? <span className="shrink-0">· {dateLabel}</span> : null}
+            {viewMode === 'compact' ? (
+              <span className="shrink-0 font-medium tabular-nums text-on-surface">
+                · {effectiveFilled}/{total}
+              </span>
+            ) : null}
           </div>
         </button>
         <button
@@ -60,7 +74,8 @@ export function SheetCard({ sheet, onOpen, onDelete }: SheetCardProps) {
         </button>
       </div>
 
-      <button type="button" onClick={onOpen} className="w-full" aria-label={`${sheet.sheetTitle} 미니 그리드`}>
+      {viewMode === 'bento' ? (
+        <button type="button" onClick={onOpen} className="w-full" aria-label={`${sheet.sheetTitle} 미니 그리드`}>
         <div
           className="grid w-full"
           style={{
@@ -96,10 +111,13 @@ export function SheetCard({ sheet, onOpen, onDelete }: SheetCardProps) {
             )
           })}
         </div>
-      </button>
+        </button>
+      ) : null}
 
       {sheet.status !== 'completed' ? (
-        <div className="mt-3 h-0.5 overflow-hidden rounded-full bg-surface-high">
+        <div
+          className={`h-0.5 overflow-hidden rounded-full bg-surface-high ${viewMode === 'bento' ? 'mt-3' : 'mt-2'}`}
+        >
           <div
             className="h-full rounded-full transition-all"
             style={{ width: `${progress}%`, backgroundColor: sheet.themeColor }}
