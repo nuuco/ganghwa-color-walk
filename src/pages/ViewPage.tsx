@@ -12,6 +12,7 @@ import {
   downloadBlob,
   shareImageFile,
 } from '../lib/exportImage'
+import { useOnlineStatus } from '../hooks/useOnlineStatus'
 import { isKakaoConfigured, shareKakaoFeed } from '../lib/kakao'
 
 function isoToDateInput(iso?: string): string {
@@ -38,6 +39,7 @@ async function capturePostcardBlob(root: HTMLElement): Promise<Blob> {
 
 export function ViewPage() {
   const { getActiveSheet, setStep, updateSheet, setActiveSheetId } = useApp()
+  const isOnline = useOnlineStatus()
   const sheet = getActiveSheet()
   const postcardRef = useRef<HTMLElement>(null)
   const [headline, setHeadline] = useState(sheet?.postcardHeadline ?? '')
@@ -63,6 +65,12 @@ export function ViewPage() {
 
   const dateValue = isoToDateInput(sheet.completedAt ?? sheet.updatedAt)
   const exportDateIso = sheet.completedAt ?? sheet.updatedAt
+  const kakaoConfigured = isKakaoConfigured()
+  const kakaoDisabled = !kakaoConfigured || !isOnline
+  const offlineKakaoStatus =
+    !isOnline && kakaoConfigured
+      ? '카카오 공유는 인터넷 연결 후 이용할 수 있어요.'
+      : undefined
 
   const showStatus = (message: string, ms = 3000) => {
     setStatusMessage(message)
@@ -167,8 +175,8 @@ export function ViewPage() {
             setStep('walk')
           }}
           busy={exporting}
-          kakaoDisabled={!isKakaoConfigured()}
-          statusMessage={statusMessage}
+          kakaoDisabled={kakaoDisabled}
+          statusMessage={statusMessage ?? offlineKakaoStatus}
           themeColor={sheet.themeColor}
         />
       </CompleteView>

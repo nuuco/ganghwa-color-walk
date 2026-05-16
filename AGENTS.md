@@ -10,3 +10,4 @@
 - Phase 1 scaffold complete: React 19·Vite·Tailwind·Context step 전환·S01~S04·O01~O03 스텁
 - Phase 2 IndexedDB camera persist: localforage·셀 Blob·카메라/갤러리·O03 삭제·메모 debounce·9/9 완성
 - Phase 3 S04 export: html2canvas 엽서 캡처·저장/이미지 공유·카카오 링크 피드·PostcardPreview·ExportActions
+- Phase 4 PWA: vite-plugin-pwa·manifest·오프라인 배너·카카오 오프라인 비활성·README
