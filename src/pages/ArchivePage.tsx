@@ -1,6 +1,7 @@
 import { EmptyArchive } from '../components/archive/EmptyArchive'
 import { SheetList } from '../components/archive/SheetList'
 import { FAB } from '../components/layout/FAB'
+import { InstallAppButton } from '../components/layout/InstallAppButton'
 import { PageHeader } from '../components/layout/PageHeader'
 import { useApp } from '../context/AppContext'
 import type { ColorWalkSheet } from '../types/sheet'
@@ -29,7 +30,7 @@ export function ArchivePage() {
   if (isHydrating) {
     return (
       <div className="flex min-h-dvh flex-col">
-        <PageHeader title="나의 강화도 색 수집" />
+        <PageHeader title="나의 강화도 색 수집" action={<InstallAppButton />} />
         <div className="flex flex-1 items-center justify-center">
           <p className="text-sm text-on-surface-variant">불러오는 중…</p>
         </div>
@@ -39,7 +40,7 @@ export function ArchivePage() {
 
   return (
     <div className="flex min-h-dvh flex-col">
-      <PageHeader title="나의 강화도 색 수집" />
+      <PageHeader title="나의 강화도 색 수집" action={<InstallAppButton />} />
       {isEmpty ? (
         <EmptyArchive />
       ) : (

@@ -15,3 +15,4 @@
 - IndexedDB thumb 저장 제거: 셀 blob만 유지
 - FAB 위치: `max-w-app`(448px) 컬럼 안 우하단 정렬 (`OfflineBanner`·Walk 오류 배너와 동일 패턴)
 - 갤러리 다중 선택: 탭 칸 기준 원형 빈 칸 순차 채움·피커 직후 O01 닫기·오류(빨강)/경고(앰버) 배너 분리
+- PWA 설치 안내: S01 헤더 「설치」→ 항상 모달·Android prompt·iOS·카톡 인앱 분기

@@ -1,4 +1,5 @@
 import { OfflineBanner } from './components/layout/OfflineBanner'
+import { PwaInstallProvider } from './context/PwaInstallContext'
 import { CaptureSourceSheet } from './components/overlays/CaptureSourceSheet'
 import { CellDetailModal } from './components/overlays/CellDetailModal'
 import { ConfirmDeleteDialog } from './components/overlays/ConfirmDeleteDialog'
@@ -76,8 +77,10 @@ function AppShell() {
 export default function App() {
   return (
     <AppProvider>
-      <OfflineBanner />
-      <AppShell />
+      <PwaInstallProvider>
+        <OfflineBanner />
+        <AppShell />
+      </PwaInstallProvider>
     </AppProvider>
   )
 }
