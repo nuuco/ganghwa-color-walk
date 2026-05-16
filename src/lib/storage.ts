@@ -7,7 +7,7 @@ import {
   getCenterCellIndex,
 } from '../config/grid'
 import type { ColorWalkSheet, SheetCell, SheetsIndex, StoredSheetMeta } from '../types/sheet'
-import { getOrCreateObjectUrl, revokeObjectUrl } from './blobUrls'
+import { getOrCreateObjectUrl, revokeObjectUrl, swapObjectUrlKeys } from './blobUrls'
 import {
   cellBlobKey,
   indexToRowCol,
@@ -320,6 +320,79 @@ export async function clearCellFromStorage(
     cells,
     filledCount,
     status,
+    updatedAt: nowIso(),
+  }
+  await saveSheetMeta(next)
+  const index = await getIndex()
+  await saveIndex(await sortIndexByUpdatedAt(index))
+  return next
+}
+
+export async function moveOrSwapCells(
+  sheetId: string,
+  fromIndex: number,
+  toIndex: number,
+): Promise<StoredSheetMeta | null> {
+  if (fromIndex === toIndex) {
+    return getSheetMeta(sheetId)
+  }
+
+  const meta = await getSheetMeta(sheetId)
+  if (!meta) return null
+
+  const centerIndex = getCenterCellIndex(meta.rows, meta.cols)
+  if (meta.centerColorSlot && (fromIndex === centerIndex || toIndex === centerIndex)) {
+    return meta
+  }
+
+  const fromPos = indexToRowCol(fromIndex, meta.cols)
+  const toPos = indexToRowCol(toIndex, meta.cols)
+  const fromRc = rowColKey(fromPos.row, fromPos.col)
+  const toRc = rowColKey(toPos.row, toPos.col)
+
+  const fromRef = meta.cells[fromRc]
+  if (!fromRef) return meta
+
+  const fromBlob = await getCellBlob(sheetId, fromPos.row, fromPos.col)
+  if (!fromBlob) return meta
+
+  const fromBlobKey = cellBlobKey(sheetId, fromPos.row, fromPos.col)
+  const toBlobKey = cellBlobKey(sheetId, toPos.row, toPos.col)
+
+  const toRef = meta.cells[toRc]
+  let cells = { ...meta.cells }
+
+  if (toRef) {
+    const toBlob = await getCellBlob(sheetId, toPos.row, toPos.col)
+    if (!toBlob) return meta
+
+    await saveCellBlob(sheetId, fromPos.row, fromPos.col, toBlob)
+    await saveCellBlob(sheetId, toPos.row, toPos.col, fromBlob)
+    cells[fromRc] = { blobKey: fromBlobKey }
+    cells[toRc] = { blobKey: toBlobKey }
+    swapObjectUrlKeys(fromBlobKey, toBlobKey)
+  } else {
+    await saveCellBlob(sheetId, toPos.row, toPos.col, fromBlob)
+    await removeCellBlob(sheetId, fromPos.row, fromPos.col)
+    delete cells[fromRc]
+    cells[toRc] = { blobKey: toBlobKey }
+    swapObjectUrlKeys(fromBlobKey, toBlobKey)
+  }
+
+  const filledCount = Object.keys(cells).length
+  const { status, walkOrdinal, completedAt } = await applyCompletionFields(
+    meta,
+    cells,
+    meta.centerColorSlot ?? false,
+  )
+
+  const next: StoredSheetMeta = {
+    ...meta,
+    cells,
+    filledCount,
+    status,
+    walkOrdinal,
+    completedAt,
     updatedAt: nowIso(),
   }
   await saveSheetMeta(next)

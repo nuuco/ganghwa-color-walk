@@ -23,3 +23,4 @@
 - 공통 버튼·토글 고정색: `bg-primary`(#fff)만 사용·`--theme-color` DOM 주입·ExportActions 테마 배경 제거
 - 중앙 컬러 토글 ON: `bg-on-surface`+`bg-background` 손잡이(테마색·흰-on-흰 제거)
 - S03 빈 GridCell: 점선 테두리+중앙 `+`(themeColor, FIGMA GridCell Empty)
+- Walk 그리드 DnD: 채워진 칸 핸들 드래그·빈/채움 칸 드롭·`moveOrSwapCells` Blob 스왑·중앙 컬러 슬롯 ON 시 중앙 제외

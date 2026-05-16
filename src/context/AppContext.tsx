@@ -25,6 +25,7 @@ import {
   loadAllSheets,
   persistSheetPatch,
   setCellsFromBlobs,
+  moveOrSwapCells,
   setCenterColorSlotInStorage,
 } from '../lib/storage'
 import type {
@@ -99,6 +100,7 @@ interface AppContextValue {
   deleteSheet: (sheetId: string) => Promise<void>
   updateSheet: (sheetId: string, patch: Partial<ColorWalkSheet>) => Promise<void>
   setCenterColorSlot: (sheetId: string, enabled: boolean) => Promise<void>
+  swapCells: (fromIndex: number, toIndex: number) => Promise<void>
   getActiveSheet: () => ColorWalkSheet | undefined
 }
 
@@ -317,6 +319,37 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, [step])
 
+  const swapCells = useCallback(
+    async (fromIndex: number, toIndex: number) => {
+      if (activeSheetId === null || isImporting) return
+      if (fromIndex === toIndex) return
+
+      const sheet = sheets.find((s) => s.id === activeSheetId)
+      if (!sheet) return
+      if (isCenterColorSlot(sheet, fromIndex) || isCenterColorSlot(sheet, toIndex)) return
+
+      setSheets((prev) =>
+        prev.map((s) => {
+          if (s.id !== activeSheetId) return s
+          const cells = s.cells.map((cell) => ({ ...cell }))
+          const fromUrl = cells[fromIndex].imageUrl
+          const toUrl = cells[toIndex].imageUrl
+          cells[fromIndex] = { ...cells[fromIndex], imageUrl: toUrl }
+          cells[toIndex] = { ...cells[toIndex], imageUrl: fromUrl }
+          return { ...s, cells }
+        }),
+      )
+
+      const meta = await moveOrSwapCells(activeSheetId, fromIndex, toIndex)
+      if (!meta) return
+
+      setSheets((prev) =>
+        prev.map((s) => (s.id === activeSheetId ? applyMetaToSheet(s, meta) : s)),
+      )
+    },
+    [activeSheetId, isImporting, sheets],
+  )
+
   const openCaptureSheet = useCallback(
     (cellIndex?: number) => {
       if (cellIndex !== undefined) {
@@ -414,6 +447,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       deleteSheet,
       updateSheet,
       setCenterColorSlot,
+      swapCells,
       getActiveSheet,
     }),
     [
@@ -446,6 +480,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       deleteSheet,
       updateSheet,
       setCenterColorSlot,
+      swapCells,
       getActiveSheet,
     ],
   )

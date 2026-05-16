@@ -15,6 +15,29 @@ export function revokeObjectUrl(key: string): void {
   urlByKey.delete(key)
 }
 
+/** 셀 Blob 스왑·이동 시 기존 object URL을 유지해 재로딩 깜박임 방지 */
+export function swapObjectUrlKeys(keyA: string, keyB: string): void {
+  const urlA = urlByKey.get(keyA)
+  const urlB = urlByKey.get(keyB)
+
+  if (urlA !== undefined && urlB !== undefined) {
+    urlByKey.set(keyA, urlB)
+    urlByKey.set(keyB, urlA)
+    return
+  }
+
+  if (urlA !== undefined) {
+    urlByKey.set(keyB, urlA)
+    urlByKey.delete(keyA)
+    return
+  }
+
+  if (urlB !== undefined) {
+    urlByKey.set(keyA, urlB)
+    urlByKey.delete(keyB)
+  }
+}
+
 export function revokeAllObjectUrls(): void {
   for (const url of urlByKey.values()) {
     URL.revokeObjectURL(url)

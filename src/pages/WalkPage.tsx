@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { AppBar } from '../components/layout/AppBar'
-import { DynamicGrid } from '../components/grid/DynamicGrid'
+import { DraggableWalkGrid } from '../components/grid/DraggableWalkGrid'
 import { CenterColorSlotToggle } from '../components/walk/CenterColorSlotToggle'
 import { DEFAULT_CELL_COUNT, getEffectiveFilledCount, isCenterColorSlot } from '../config/grid'
 import { WalkHeader } from '../components/walk/WalkHeader'
@@ -23,6 +23,7 @@ export function WalkPage() {
     clearFileError,
     clearImportNotice,
     setCenterColorSlot,
+    swapCells,
   } = useApp()
 
   const sheet = getActiveSheet()
@@ -121,7 +122,12 @@ export function WalkPage() {
           debouncedPersistNotes({ noteStart: v })
         }}
       />
-      <DynamicGrid sheet={sheet} onCellClick={handleCellClick} />
+      <DraggableWalkGrid
+        sheet={sheet}
+        reorderDisabled={isImporting}
+        onCellClick={handleCellClick}
+        onSwapCells={(from, to) => void swapCells(from, to)}
+      />
       <WalkJournal
         label="돌아보며"
         value={noteReflection}
