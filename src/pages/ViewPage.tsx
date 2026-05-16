@@ -49,7 +49,6 @@ export function ViewPage() {
   useEffect(() => {
     if (sheet) {
       setHeadline(sheet.postcardHeadline)
-      document.documentElement.style.setProperty('--theme-color', sheet.themeColor)
     }
   }, [sheet])
 
@@ -177,7 +176,6 @@ export function ViewPage() {
           busy={exporting}
           kakaoDisabled={kakaoDisabled}
           statusMessage={statusMessage ?? offlineKakaoStatus}
-          themeColor={sheet.themeColor}
         />
       </CompleteView>
     </div>

@@ -6,7 +6,6 @@ interface ExportActionsProps {
   busy?: boolean
   kakaoDisabled?: boolean
   statusMessage?: string
-  themeColor?: string
 }
 
 export function ExportActions({
@@ -17,7 +16,6 @@ export function ExportActions({
   busy = false,
   kakaoDisabled = false,
   statusMessage,
-  themeColor = '#a882e0',
 }: ExportActionsProps) {
   const disabled = busy
 
@@ -32,8 +30,7 @@ export function ExportActions({
         type="button"
         onClick={onSave}
         disabled={disabled}
-        className="flex h-12 w-full items-center justify-center rounded-xl text-sm font-semibold text-on-primary disabled:opacity-50"
-        style={{ backgroundColor: themeColor }}
+        className="flex h-12 w-full items-center justify-center rounded-xl bg-primary text-sm font-semibold text-on-primary disabled:opacity-50"
       >
         사진첩에 저장
       </button>

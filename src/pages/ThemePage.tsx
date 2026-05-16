@@ -39,21 +39,18 @@ export function ThemePage() {
       themeLabel: preset.themeLabel,
       themeColor: preset.themeColor,
     })
-    document.documentElement.style.setProperty('--theme-color', preset.themeColor)
   }
 
   const handleColorChange = (color: string) => {
     setThemeDraft({ themeId: 'custom', themeColor: color })
-    document.documentElement.style.setProperty('--theme-color', color)
   }
 
   const handleCta = async () => {
-    const id = await createSheetFromDraft()
-    if (id) document.documentElement.style.setProperty('--theme-color', themeDraft.themeColor)
+    await createSheetFromDraft()
   }
 
   return (
-    <div className="flex min-h-dvh flex-col pb-40" style={{ ['--theme-color' as string]: themeDraft.themeColor }}>
+    <div className="flex min-h-dvh flex-col pb-40">
       <AppBar title="새 컬러워크" showBack onBack={() => setStep('archive')} />
       <div className="flex flex-col gap-5 py-4">
         <SheetTitleInput

@@ -14,12 +14,12 @@ export function CenterColorSlotToggle({ enabled, onChange }: CenterColorSlotTogg
         aria-label="중앙 컬러 칸 사용"
         onClick={() => onChange(!enabled)}
         className={`relative h-7 w-12 shrink-0 rounded-full transition-colors duration-200 ${
-          enabled ? 'bg-[var(--theme-color,#a882e0)]' : 'bg-outline-variant/80'
+          enabled ? 'bg-on-surface' : 'bg-outline-variant/80'
         }`}
       >
         <span
-          className={`absolute top-0.5 left-0.5 h-6 w-6 rounded-full bg-white shadow-sm transition-transform duration-200 ${
-            enabled ? 'translate-x-5' : 'translate-x-0'
+          className={`absolute top-0.5 left-0.5 h-6 w-6 rounded-full shadow-sm transition-[transform,background-color] duration-200 ${
+            enabled ? 'translate-x-5 bg-background' : 'translate-x-0 bg-white'
           }`}
           aria-hidden
         />

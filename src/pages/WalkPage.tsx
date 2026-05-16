@@ -33,9 +33,8 @@ export function WalkPage() {
     if (sheet) {
       setNoteStart(sheet.noteStart)
       setNoteReflection(sheet.noteReflection)
-      document.documentElement.style.setProperty('--theme-color', sheet.themeColor)
     }
-  }, [sheet?.id, sheet?.noteStart, sheet?.noteReflection, sheet?.themeColor])
+  }, [sheet?.id, sheet?.noteStart, sheet?.noteReflection])
 
   const debouncedPersistNotes = useDebouncedCallback(
     (patch: { noteStart?: string; noteReflection?: string }) => {
@@ -83,7 +82,7 @@ export function WalkPage() {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col" style={{ ['--theme-color' as string]: sheet.themeColor }}>
+    <div className="flex min-h-dvh flex-col">
       {fileError ? (
         <div
           role="alert"
