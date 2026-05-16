@@ -121,6 +121,7 @@
 | **그리드** | 빈 칸 탭 → **O01**. 채운 칸 탭 → **O02**. 채움 시 연두 체크 오버레이(UXD). |
 | **진행** | 하단 `COLLECTION PROGRESS` + `%` + `themeColor` 바 (`filled/total`). |
 | **9/9** | `status=completed`, `walkOrdinal` 부여(첫 완성 시), `step='view'`. |
+| **다중 사진** | 갤러리에서 여러 장 선택 시 한 번에 순차 채움 (`resolveCellTargets`) |
 | **← 목록** | `archive`로; 데이터는 이미 자동 저장 가정. |
 
 **S03 수용 기준**
@@ -159,8 +160,9 @@
 | **FIGMA** | §6 O01 · §4.5 |
 | **트리거** | 빈 `GridCell` 탭, O02 「다시 찍기」 |
 | **UI** | Bottom sheet, 핸들, 카메라 / 갤러리 행, 닫기 |
-| **구현** | 숨김 `input`×2 (`capture=environment` / 없음), 행 탭 시 `click()` |
-| **완료 체크** | [ ] 선택 후 시트에 Blob 반영 [ ] 시트 `updatedAt` 갱신 |
+| **구현** | 숨김 `input`×2 — 카메라 1장 / 갤러리 `multiple`, 선택 직후 시트 닫기 |
+| **다중** | OS 선택 순서대로 탭 칸→시계방향 빈 칸; 초과 분 경고(앰버), 검증 실패 오류(빨강); 저장 중 `ImportOverlay` |
+| **완료 체크** | [x] 선택 후 Blob 반영 [x] `updatedAt` 갱신 [x] 갤러리 다중 선택 |
 
 ---
 

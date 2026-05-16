@@ -3,7 +3,7 @@ import { useRef, type ChangeEvent } from 'react'
 interface CaptureSourceSheetProps {
   open: boolean
   onClose: () => void
-  onPick: (file: File) => void
+  onPick: (files: File[]) => void
 }
 
 export function CaptureSourceSheet({ open, onClose, onPick }: CaptureSourceSheetProps) {
@@ -13,13 +13,16 @@ export function CaptureSourceSheet({ open, onClose, onPick }: CaptureSourceSheet
   if (!open) return null
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
+    const files = Array.from(event.target.files ?? [])
     event.target.value = ''
-    if (file) onPick(file)
+    if (files.length > 0) onPick(files)
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col justify-end bg-black/60" role="presentation">
+    <div
+      className="fixed inset-0 z-50 flex flex-col justify-end bg-black/60"
+      role="presentation"
+    >
       <button type="button" className="flex-1" onClick={onClose} aria-label="닫기" />
       <div
         role="dialog"
@@ -40,6 +43,7 @@ export function CaptureSourceSheet({ open, onClose, onPick }: CaptureSourceSheet
           ref={galleryInputRef}
           type="file"
           accept="image/*"
+          multiple
           className="hidden"
           onChange={handleFileChange}
         />
@@ -56,10 +60,11 @@ export function CaptureSourceSheet({ open, onClose, onPick }: CaptureSourceSheet
           <li>
             <button
               type="button"
-              className="flex h-12 w-full items-center rounded-xl px-4 text-left hover:bg-surface-high"
+              className="flex h-12 w-full flex-col items-start justify-center rounded-xl px-4 text-left hover:bg-surface-high"
               onClick={() => galleryInputRef.current?.click()}
             >
-              갤러리에서 선택
+              <span>갤러리에서 선택</span>
+              <span className="text-xs text-on-surface-variant">여러 장 선택 가능</span>
             </button>
           </li>
         </ul>

@@ -16,8 +16,11 @@ export function WalkPage() {
     updateSheet,
     openCaptureSheet,
     openCellDetail,
+    isImporting,
     fileError,
+    importNotice,
     clearFileError,
+    clearImportNotice,
   } = useApp()
 
   const sheet = getActiveSheet()
@@ -46,6 +49,12 @@ export function WalkPage() {
     return () => clearTimeout(timer)
   }, [fileError, clearFileError])
 
+  useEffect(() => {
+    if (!importNotice) return
+    const timer = setTimeout(() => clearImportNotice(), 4000)
+    return () => clearTimeout(timer)
+  }, [importNotice, clearImportNotice])
+
   if (!sheet) {
     return (
       <div className="flex min-h-dvh items-center justify-center px-page">
@@ -61,6 +70,7 @@ export function WalkPage() {
   const total = sheet.rows * sheet.cols
 
   const handleCellClick = (index: number, filled: boolean) => {
+    if (isImporting) return
     if (filled) {
       openCellDetail(index)
     } else {
@@ -76,6 +86,15 @@ export function WalkPage() {
           className="fixed left-1/2 top-4 z-[60] w-[calc(100%-2.5rem)] max-w-app -translate-x-1/2 rounded-xl bg-red-600/95 px-4 py-3 text-center text-sm text-white shadow-lg"
         >
           {fileError}
+        </div>
+      ) : null}
+      {importNotice ? (
+        <div
+          role="status"
+          className="fixed left-1/2 z-[60] w-[calc(100%-2.5rem)] max-w-app -translate-x-1/2 rounded-xl bg-amber-600/95 px-4 py-3 text-center text-sm text-white shadow-lg"
+          style={{ top: fileError ? '4.5rem' : '1rem' }}
+        >
+          {importNotice}
         </div>
       ) : null}
       <AppBar title="산책" showBack onBack={() => setStep('archive')} />

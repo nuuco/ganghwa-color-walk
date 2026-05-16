@@ -14,3 +14,4 @@
 - Phase 4 PWA: vite-plugin-pwa·manifest·오프라인 배너·카카오 오프라인 비활성·README
 - IndexedDB thumb 저장 제거: 셀 blob만 유지
 - FAB 위치: `max-w-app`(448px) 컬럼 안 우하단 정렬 (`OfflineBanner`·Walk 오류 배너와 동일 패턴)
+- 갤러리 다중 선택: 탭 칸 기준 원형 빈 칸 순차 채움·피커 직후 O01 닫기·오류(빨강)/경고(앰버) 배너 분리

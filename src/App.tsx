@@ -2,6 +2,7 @@ import { OfflineBanner } from './components/layout/OfflineBanner'
 import { CaptureSourceSheet } from './components/overlays/CaptureSourceSheet'
 import { CellDetailModal } from './components/overlays/CellDetailModal'
 import { ConfirmDeleteDialog } from './components/overlays/ConfirmDeleteDialog'
+import { ImportOverlay } from './components/overlays/ImportOverlay'
 import { AppProvider, useApp } from './context/AppContext'
 import { ArchivePage } from './pages/ArchivePage'
 import { ThemePage } from './pages/ThemePage'
@@ -15,6 +16,7 @@ function AppShell() {
     cellDetailOpen,
     confirmDeleteOpen,
     deleteTarget,
+    isImporting,
     getActiveSheet,
     activeCellIndex,
     closeCaptureSheet,
@@ -23,7 +25,7 @@ function AppShell() {
     confirmDelete,
     openCaptureSheet,
     openConfirmDelete,
-    setCellFromFile,
+    setCellsFromFiles,
   } = useApp()
 
   const sheet = getActiveSheet()
@@ -40,11 +42,12 @@ function AppShell() {
       <CaptureSourceSheet
         open={captureSheetOpen}
         onClose={closeCaptureSheet}
-        onPick={async (file) => {
-          await setCellFromFile(file)
+        onPick={(files) => {
           closeCaptureSheet()
+          void setCellsFromFiles(files)
         }}
       />
+      <ImportOverlay open={isImporting} />
       <CellDetailModal
         open={cellDetailOpen}
         imageUrl={activeCell?.imageUrl}

@@ -9,6 +9,7 @@ import {
 } from 'react'
 import { DEFAULT_CELL_COUNT, DEFAULT_COLS, DEFAULT_ROWS } from '../config/grid'
 import { validateImageFile } from '../lib/imageValidation'
+import { resolveCellTargets } from '../lib/resolveCellTargets'
 import { createSheetId } from '../lib/sheetId'
 import {
   clearCellFromStorage,
@@ -17,7 +18,7 @@ import {
   hydrateSheet,
   loadAllSheets,
   persistSheetPatch,
-  setCellFromBlob,
+  setCellsFromBlobs,
 } from '../lib/storage'
 import type {
   AppStep,
@@ -58,12 +59,22 @@ function applyMetaToSheet(sheet: ColorWalkSheet, meta: StoredSheetMeta): ColorWa
   }
 }
 
+function filledIndicesFromSheet(sheet: ColorWalkSheet): Set<number> {
+  const filled = new Set<number>()
+  for (const cell of sheet.cells) {
+    if (cell.imageUrl) filled.add(cell.index)
+  }
+  return filled
+}
+
 interface AppContextValue {
   step: AppStep
   activeSheetId: string | null
   sheets: ColorWalkSheet[]
   isHydrating: boolean
+  isImporting: boolean
   fileError: string | null
+  importNotice: string | null
   themeDraft: ThemeDraft
   captureSheetOpen: boolean
   cellDetailOpen: boolean
@@ -75,6 +86,7 @@ interface AppContextValue {
   setThemeDraft: (draft: Partial<ThemeDraft>) => void
   resetThemeDraft: () => void
   clearFileError: () => void
+  clearImportNotice: () => void
   openCaptureSheet: (cellIndex?: number) => void
   closeCaptureSheet: () => void
   openCellDetail: (cellIndex: number) => void
@@ -83,7 +95,7 @@ interface AppContextValue {
   closeConfirmDelete: () => void
   confirmDelete: () => Promise<void>
   createSheetFromDraft: () => Promise<string | null>
-  setCellFromFile: (file: File) => Promise<void>
+  setCellsFromFiles: (files: File[]) => Promise<void>
   deleteSheet: (sheetId: string) => Promise<void>
   updateSheet: (sheetId: string, patch: Partial<ColorWalkSheet>) => Promise<void>
   getActiveSheet: () => ColorWalkSheet | undefined
@@ -96,7 +108,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [activeSheetId, setActiveSheetId] = useState<string | null>(null)
   const [sheets, setSheets] = useState<ColorWalkSheet[]>([])
   const [isHydrating, setIsHydrating] = useState(true)
+  const [isImporting, setIsImporting] = useState(false)
   const [fileError, setFileError] = useState<string | null>(null)
+  const [importNotice, setImportNotice] = useState<string | null>(null)
   const [themeDraft, setThemeDraftState] = useState<ThemeDraft>(defaultThemeDraft)
   const [captureSheetOpen, setCaptureSheetOpen] = useState(false)
   const [cellDetailOpen, setCellDetailOpen] = useState(false)
@@ -129,6 +143,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const clearFileError = useCallback(() => {
     setFileError(null)
+  }, [])
+
+  const clearImportNotice = useCallback(() => {
+    setImportNotice(null)
   }, [])
 
   const getActiveSheet = useCallback(() => {
@@ -205,28 +223,83 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return id
   }, [themeDraft])
 
-  const setCellFromFile = useCallback(
-    async (file: File) => {
-      if (activeSheetId === null || activeCellIndex === null) return
+  const setCellsFromFiles = useCallback(
+    async (files: File[]) => {
+      if (activeSheetId === null || activeCellIndex === null || files.length === 0) return
 
-      const validation = validateImageFile(file)
-      if (!validation.ok) {
-        setFileError(validation.message)
+      const sheet = sheets.find((s) => s.id === activeSheetId)
+      if (!sheet) return
+
+      const validFiles: File[] = []
+      let invalidCount = 0
+      for (const file of files) {
+        const validation = validateImageFile(file)
+        if (validation.ok) {
+          validFiles.push(file)
+        } else {
+          invalidCount += 1
+        }
+      }
+
+      if (validFiles.length === 0) {
+        setImportNotice(null)
+        setFileError(
+          invalidCount === 1
+            ? '이미지 파일만 선택할 수 있습니다. 8MB 이하인지 확인해 주세요.'
+            : `${invalidCount}장은 형식 또는 용량(8MB 이하) 때문에 넣지 못했어요`,
+        )
         return
       }
 
+      const totalCells = sheet.rows * sheet.cols
+      const targets = resolveCellTargets({
+        totalCells,
+        filledIndices: filledIndicesFromSheet(sheet),
+        startIndex: activeCellIndex,
+        fileCount: validFiles.length,
+      })
+
+      const assignCount = Math.min(validFiles.length, targets.length)
+      const overflowCount = validFiles.length - assignCount
+
+      const assignments = targets.slice(0, assignCount).map((cellIndex, i) => ({
+        cellIndex,
+        blob: validFiles[i].slice(0, validFiles[i].size, validFiles[i].type),
+      }))
+
       setFileError(null)
-      const blob = file.slice(0, file.size, file.type)
-      const { meta, completed } = await setCellFromBlob(activeSheetId, activeCellIndex, blob)
-      const hydrated = await hydrateSheet(meta)
+      setImportNotice(null)
+      setIsImporting(true)
 
-      setSheets((prev) => prev.map((s) => (s.id === activeSheetId ? hydrated : s)))
+      try {
+        const { meta, completed } = await setCellsFromBlobs(activeSheetId, assignments)
+        const hydrated = await hydrateSheet(meta)
+        setSheets((prev) => prev.map((s) => (s.id === activeSheetId ? hydrated : s)))
 
-      if (completed) {
-        setStep('view')
+        if (invalidCount > 0) {
+          setFileError(
+            invalidCount === 1
+              ? '1장은 형식 또는 용량(8MB 이하) 때문에 넣지 못했어요'
+              : `${invalidCount}장은 형식 또는 용량(8MB 이하) 때문에 넣지 못했어요`,
+          )
+        }
+
+        if (overflowCount > 0) {
+          setImportNotice(
+            overflowCount === 1
+              ? '1장은 빈 칸이 없어 넣지 못했어요'
+              : `${overflowCount}장은 빈 칸이 없어 넣지 못했어요`,
+          )
+        }
+
+        if (completed) {
+          setStep('view')
+        }
+      } finally {
+        setIsImporting(false)
       }
     },
-    [activeCellIndex, activeSheetId],
+    [activeCellIndex, activeSheetId, sheets],
   )
 
   const openCaptureSheet = useCallback((cellIndex?: number) => {
@@ -282,7 +355,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       activeSheetId,
       sheets,
       isHydrating,
+      isImporting,
       fileError,
+      importNotice,
       themeDraft,
       captureSheetOpen,
       cellDetailOpen,
@@ -294,6 +369,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setThemeDraft,
       resetThemeDraft,
       clearFileError,
+      clearImportNotice,
       openCaptureSheet,
       closeCaptureSheet,
       openCellDetail,
@@ -302,7 +378,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       closeConfirmDelete,
       confirmDelete,
       createSheetFromDraft,
-      setCellFromFile,
+      setCellsFromFiles,
       deleteSheet,
       updateSheet,
       getActiveSheet,
@@ -312,7 +388,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       activeSheetId,
       sheets,
       isHydrating,
+      isImporting,
       fileError,
+      importNotice,
       themeDraft,
       captureSheetOpen,
       cellDetailOpen,
@@ -322,6 +400,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setThemeDraft,
       resetThemeDraft,
       clearFileError,
+      clearImportNotice,
       openCaptureSheet,
       closeCaptureSheet,
       openCellDetail,
@@ -330,7 +409,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       closeConfirmDelete,
       confirmDelete,
       createSheetFromDraft,
-      setCellFromFile,
+      setCellsFromFiles,
       deleteSheet,
       updateSheet,
       getActiveSheet,

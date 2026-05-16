@@ -184,28 +184,34 @@ export async function persistSheetPatch(
   return next
 }
 
-export async function setCellFromBlob(
+export async function setCellsFromBlobs(
   sheetId: string,
-  cellIndex: number,
-  blob: Blob,
+  assignments: { cellIndex: number; blob: Blob }[],
 ): Promise<{ meta: StoredSheetMeta; completed: boolean }> {
   const meta = await getSheetMeta(sheetId)
   if (!meta) throw new Error('Sheet not found')
 
-  const { row, col } = indexToRowCol(cellIndex, meta.cols)
-  const rc = rowColKey(row, col)
-  const blobKey = cellBlobKey(sheetId, row, col)
-
-  if (meta.cells[rc]) {
-    revokeObjectUrl(blobKey)
+  if (assignments.length === 0) {
+    return { meta, completed: false }
   }
 
-  await saveCellBlob(sheetId, row, col, blob)
-
-  const cells = { ...meta.cells, [rc]: { blobKey } }
-  const filledCount = Object.keys(cells).length
+  let cells = { ...meta.cells }
   const wasCompleted = meta.status === 'completed'
 
+  for (const { cellIndex, blob } of assignments) {
+    const { row, col } = indexToRowCol(cellIndex, meta.cols)
+    const rc = rowColKey(row, col)
+    const blobKey = cellBlobKey(sheetId, row, col)
+
+    if (cells[rc]) {
+      revokeObjectUrl(blobKey)
+    }
+
+    await saveCellBlob(sheetId, row, col, blob)
+    cells = { ...cells, [rc]: { blobKey } }
+  }
+
+  const filledCount = Object.keys(cells).length
   let status = meta.status
   let walkOrdinal = meta.walkOrdinal
   let completedAt = meta.completedAt
@@ -231,6 +237,14 @@ export async function setCellFromBlob(
 
   const justCompleted = !wasCompleted && status === 'completed'
   return { meta: next, completed: justCompleted }
+}
+
+export async function setCellFromBlob(
+  sheetId: string,
+  cellIndex: number,
+  blob: Blob,
+): Promise<{ meta: StoredSheetMeta; completed: boolean }> {
+  return setCellsFromBlobs(sheetId, [{ cellIndex, blob }])
 }
 
 export async function clearCellFromStorage(
