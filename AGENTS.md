@@ -55,5 +55,7 @@
 - 그리드 외곽 라운드: `.grid-mosaic` `overflow:hidden`·`--grid-outer-radius: 4px`·셀 내부는 직각
 - 엽서 export 중앙 HEX: `absolute inset-0`→그리드 스택·html2canvas 배경 위치 어긋남 수정
 - README 현행화: 아카이브·테마·walk·view·PWA·기술스택·흐름도·배포 URL 반영
+- O02 셀 상세: fit 시 이미지 크기 기준 가로·세로 중앙·콘텐츠 박스 inline-block
 - S04 엽서 헤더: 스와치+흰 컬러명·푸터 @강화 컬러워크(웹 flex 정렬)
 - 엽서 export 보정: exportPostcardFix onclone·폰트 ready·컬러명 baseline·잘림 방지(화면 스타일 무변경)
+- O02 셀 상세: fit+핀치줌(react-zoom-pan-pinch)·h-dvh·하단 버튼 고정
