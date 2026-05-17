@@ -62,6 +62,7 @@ export const PostcardPreview = forwardRef<HTMLElement, PostcardPreviewProps>(
                 <CenterColorSlotCell
                   key={cell.index}
                   themeColor={sheet.themeColor}
+                  themeLabel={sheet.themeLabel}
                   imageUrl={cell.imageUrl}
                   imageCrossOrigin="anonymous"
                 />

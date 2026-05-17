@@ -85,6 +85,7 @@ export function SheetCard({ sheet, viewMode, onOpen, onDelete }: SheetCardProps)
                 <CenterColorSlotCell
                   key={cell.index}
                   themeColor={sheet.themeColor}
+                  themeLabel={sheet.themeLabel}
                   imageUrl={cell.imageUrl}
                 />
               )

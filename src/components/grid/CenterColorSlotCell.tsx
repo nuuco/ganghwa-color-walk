@@ -2,6 +2,7 @@ import { ColorSlotCell } from './ColorSlotCell'
 
 interface CenterColorSlotCellProps {
   themeColor: string
+  themeLabel: string
   imageUrl?: string
   showEmptyPlaceholder?: boolean
   imageCrossOrigin?: 'anonymous'
@@ -10,6 +11,7 @@ interface CenterColorSlotCellProps {
 /** 컬러 레이어는 위에, 아래 사진(blob)은 토글 OFF 시 다시 보임 */
 export function CenterColorSlotCell({
   themeColor,
+  themeLabel,
   imageUrl,
   showEmptyPlaceholder = false,
   imageCrossOrigin,
@@ -29,7 +31,7 @@ export function CenterColorSlotCell({
           style={{ borderColor: themeColor }}
         />
       ) : null}
-      <ColorSlotCell themeColor={themeColor} overlay />
+      <ColorSlotCell themeColor={themeColor} themeLabel={themeLabel} overlay />
     </div>
   )
 }

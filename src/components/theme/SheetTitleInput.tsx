@@ -1,3 +1,5 @@
+import { SHEET_TEXT_MAX_LENGTH } from '../../config/textLimits'
+
 interface SheetTitleInputProps {
   value: string
   onChange: (value: string) => void
@@ -21,7 +23,7 @@ export function SheetTitleInput({ value, onChange, error, valid }: SheetTitleInp
         <input
           id="sheet-title"
           type="text"
-          maxLength={20}
+          maxLength={SHEET_TEXT_MAX_LENGTH}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder="예: 갯벌 산책"
@@ -34,7 +36,9 @@ export function SheetTitleInput({ value, onChange, error, valid }: SheetTitleInp
         ) : null}
       </div>
       {error ? <p className="mt-1 text-xs text-red-400">{error}</p> : null}
-      <p className="mt-1 text-xs text-on-surface-variant">{value.length}/20</p>
+      <p className="mt-1 text-xs text-on-surface-variant">
+        {value.length}/{SHEET_TEXT_MAX_LENGTH}
+      </p>
     </div>
   )
 }

@@ -29,7 +29,10 @@ const dropAnimation: DropAnimation = {
 }
 
 interface DraggableWalkGridProps {
-  sheet: Pick<ColorWalkSheet, 'cells' | 'rows' | 'cols' | 'centerColorSlot' | 'themeColor'>
+  sheet: Pick<
+    ColorWalkSheet,
+    'cells' | 'rows' | 'cols' | 'centerColorSlot' | 'themeColor' | 'themeLabel'
+  >
   reorderDisabled?: boolean
   onCellClick: (index: number, filled: boolean) => void
   onSwapCells: (fromIndex: number, toIndex: number) => void
@@ -97,6 +100,7 @@ export function DraggableWalkGrid({
               <CenterColorSlotCell
                 key={cell.index}
                 themeColor={sheet.themeColor}
+                themeLabel={sheet.themeLabel}
                 imageUrl={cell.imageUrl}
                 showEmptyPlaceholder
               />

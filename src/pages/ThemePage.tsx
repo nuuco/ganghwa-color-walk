@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { SHEET_TEXT_MAX_LENGTH } from '../config/textLimits'
 import { AppBar } from '../components/layout/AppBar'
 import { ThemeStickyBar } from '../components/layout/ThemeStickyBar'
 import { ColorRandomButton } from '../components/theme/ColorRandomButton'
@@ -15,19 +16,26 @@ export function ThemePage() {
   const titleTrim = themeDraft.sheetTitle.trim()
   const labelTrim = themeDraft.themeLabel.trim()
 
-  const titleValid = titleTrim.length >= 1 && titleTrim.length <= 20
-  const labelValid = labelTrim.length >= 1
+  const titleValid =
+    titleTrim.length >= 1 && titleTrim.length <= SHEET_TEXT_MAX_LENGTH
+  const labelValid =
+    labelTrim.length >= 1 && labelTrim.length <= SHEET_TEXT_MAX_LENGTH
 
   const titleError = useMemo(() => {
     if (themeDraft.sheetTitle.length === 0) return undefined
     if (titleTrim.length === 0) return '제목을 입력해 주세요'
-    if (titleTrim.length > 20) return '제목은 20자 이하로 입력해 주세요'
+    if (titleTrim.length > SHEET_TEXT_MAX_LENGTH) {
+      return `제목은 ${SHEET_TEXT_MAX_LENGTH}자 이하로 입력해 주세요`
+    }
     return undefined
   }, [themeDraft.sheetTitle, titleTrim])
 
   const labelError = useMemo(() => {
     if (themeDraft.themeLabel.length === 0) return undefined
     if (labelTrim.length === 0) return '컬러명을 입력해 주세요'
+    if (labelTrim.length > SHEET_TEXT_MAX_LENGTH) {
+      return `컬러명은 ${SHEET_TEXT_MAX_LENGTH}자 이하로 입력해 주세요`
+    }
     return undefined
   }, [themeDraft.themeLabel, labelTrim])
 

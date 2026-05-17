@@ -34,4 +34,5 @@
 - walk 헤더 색 편집: 제목·(스와치+컬러명) 줄 분리·ThemeEditModal·WalkThemeDisplay 한 줄·themeId custom
 - walk 메모: 산책 시작 제거·WalkMemo 단일·noteReflection·PostcardPreview 엽서 표시
 - 완성 수동: 9/9 자동 완성·view 이동 제거·completeSheetInStorage·완성하기 버튼
+- 컬러명 20자·중앙 칸 컬러명·getContrastTextColor 대비 글자색
 - PWA 메인 뒤로가기: standalone 아카이브에서 history 가드·ExitConfirmDialog 종료 확인

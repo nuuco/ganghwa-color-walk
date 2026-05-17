@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { isValidSheetTitle, SHEET_TEXT_MAX_LENGTH } from '../../config/textLimits'
 import { ThemeEditModal } from '../overlays/ThemeEditModal'
 import { PencilIcon } from '../ui/PencilIcon'
 import { WalkThemeDisplay } from './WalkThemeDisplay'
@@ -13,11 +14,6 @@ interface WalkHeaderProps {
   onTitleChange?: (title: string) => void
   themeEditable?: boolean
   onThemeChange?: (patch: { themeLabel: string; themeColor: string }) => void
-}
-
-function isValidSheetTitle(title: string): boolean {
-  const trimmed = title.trim()
-  return trimmed.length >= 1 && trimmed.length <= 20
 }
 
 export function WalkHeader({
@@ -85,7 +81,7 @@ export function WalkHeader({
               <input
                 ref={inputRef}
                 type="text"
-                maxLength={20}
+                maxLength={SHEET_TEXT_MAX_LENGTH}
                 value={draftTitle}
                 onChange={(e) => setDraftTitle(e.target.value)}
                 onBlur={handleTitleBlur}

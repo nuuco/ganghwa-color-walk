@@ -1,3 +1,5 @@
+import { SHEET_TEXT_MAX_LENGTH } from '../../config/textLimits'
+
 interface CustomColorPickerProps {
   themeColor: string
   themeLabel: string
@@ -57,6 +59,7 @@ export function CustomColorPicker({
             <input
               id="theme-label"
               type="text"
+              maxLength={SHEET_TEXT_MAX_LENGTH}
               value={themeLabel}
               onChange={(e) => onLabelChange(e.target.value)}
               placeholder="예: 순무 보라"
@@ -69,6 +72,9 @@ export function CustomColorPicker({
             ) : null}
           </div>
           {labelError ? <p className="mt-1 text-xs text-red-400">{labelError}</p> : null}
+          <p className="mt-1 text-xs text-on-surface-variant">
+            {themeLabel.length}/{SHEET_TEXT_MAX_LENGTH}
+          </p>
         </div>
       </div>
     </section>

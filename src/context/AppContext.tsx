@@ -14,6 +14,7 @@ import {
   getFilledIndicesForTargeting,
   isCenterColorSlot,
 } from '../config/grid'
+import { isValidSheetTitle, isValidThemeLabel } from '../config/textLimits'
 import { validateImageFile } from '../lib/imageValidation'
 import { resolveCellTargets } from '../lib/resolveCellTargets'
 import { createSheetId } from '../lib/sheetId'
@@ -193,7 +194,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const createSheetFromDraft = useCallback(async () => {
     const title = themeDraft.sheetTitle.trim()
     const label = themeDraft.themeLabel.trim()
-    if (title.length < 1 || title.length > 20 || !label) return null
+    if (!isValidSheetTitle(title) || !isValidThemeLabel(label)) return null
 
     const id = createSheetId()
     const meta = await createSheetMeta({

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { SHEET_TEXT_MAX_LENGTH } from '../../config/textLimits'
 import { CustomColorPicker } from '../theme/CustomColorPicker'
 
 interface ThemeEditModalProps {
@@ -26,10 +27,14 @@ export function ThemeEditModal({
   }, [open, themeLabel, themeColor])
 
   const labelTrim = draftLabel.trim()
-  const labelValid = labelTrim.length >= 1
+  const labelValid =
+    labelTrim.length >= 1 && labelTrim.length <= SHEET_TEXT_MAX_LENGTH
   const labelError = useMemo(() => {
     if (draftLabel.length === 0) return undefined
     if (labelTrim.length === 0) return '컬러명을 입력해 주세요'
+    if (labelTrim.length > SHEET_TEXT_MAX_LENGTH) {
+      return `컬러명은 ${SHEET_TEXT_MAX_LENGTH}자 이하로 입력해 주세요`
+    }
     return undefined
   }, [draftLabel, labelTrim])
 

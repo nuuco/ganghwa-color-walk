@@ -4,7 +4,10 @@ import { CenterColorSlotCell } from './CenterColorSlotCell'
 import { GridCell } from './GridCell'
 
 interface DynamicGridProps {
-  sheet: Pick<ColorWalkSheet, 'cells' | 'rows' | 'cols' | 'centerColorSlot' | 'themeColor'>
+  sheet: Pick<
+    ColorWalkSheet,
+    'cells' | 'rows' | 'cols' | 'centerColorSlot' | 'themeColor' | 'themeLabel'
+  >
   onCellClick: (index: number, filled: boolean) => void
 }
 
@@ -25,6 +28,7 @@ export function DynamicGrid({ sheet, onCellClick }: DynamicGridProps) {
             <CenterColorSlotCell
               key={cell.index}
               themeColor={sheet.themeColor}
+              themeLabel={sheet.themeLabel}
               imageUrl={cell.imageUrl}
               showEmptyPlaceholder
             />
