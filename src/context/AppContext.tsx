@@ -107,8 +107,10 @@ interface AppContextValue {
   setCenterColorSlot: (sheetId: string, enabled: boolean) => Promise<void>
   swapCells: (fromIndex: number, toIndex: number) => Promise<void>
   completeSheet: (sheetId: string) => Promise<boolean>
+  openWalkForEdit: (sheetId: string) => void
+  openCompleteView: (sheetId: string) => void
   canCelebrateSheet: (sheetId: string) => boolean
-  markSheetCelebrated: (sheetId: string) => void
+  markSheetCelebrated: () => void
   getActiveSheet: () => ColorWalkSheet | undefined
 }
 
@@ -117,7 +119,9 @@ const AppContext = createContext<AppContextValue | null>(null)
 export function AppProvider({ children }: { children: ReactNode }) {
   const [step, setStep] = useState<AppStep>('archive')
   const [celebrationSheetId, setCelebrationSheetId] = useState<string | null>(null)
-  const celebrationShownRef = useRef<string | null>(null)
+  const celebrationEventIdRef = useRef(0)
+  const lastCelebratedEventIdRef = useRef(0)
+  const pendingViewCelebrationRef = useRef(false)
   const [activeSheetId, setActiveSheetId] = useState<string | null>(null)
   const [sheets, setSheets] = useState<ColorWalkSheet[]>([])
   const [isHydrating, setIsHydrating] = useState(true)
@@ -384,15 +388,39 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [activeSheetId, isImporting, sheets],
   )
 
+  const requestSheetCelebration = useCallback((sheetId: string) => {
+    celebrationEventIdRef.current += 1
+    setCelebrationSheetId(sheetId)
+  }, [])
+
   const canCelebrateSheet = useCallback(
     (sheetId: string) =>
-      celebrationSheetId === sheetId && celebrationShownRef.current !== sheetId,
+      celebrationSheetId === sheetId &&
+      lastCelebratedEventIdRef.current !== celebrationEventIdRef.current,
     [celebrationSheetId],
   )
 
-  const markSheetCelebrated = useCallback((sheetId: string) => {
-    celebrationShownRef.current = sheetId
+  const markSheetCelebrated = useCallback(() => {
+    lastCelebratedEventIdRef.current = celebrationEventIdRef.current
   }, [])
+
+  const openWalkForEdit = useCallback((sheetId: string) => {
+    setActiveSheetId(sheetId)
+    pendingViewCelebrationRef.current = true
+    setStep('walk')
+  }, [])
+
+  const openCompleteView = useCallback(
+    (sheetId: string) => {
+      setActiveSheetId(sheetId)
+      if (pendingViewCelebrationRef.current) {
+        pendingViewCelebrationRef.current = false
+        requestSheetCelebration(sheetId)
+      }
+      setStep('view')
+    },
+    [requestSheetCelebration],
+  )
 
   useEffect(() => {
     if (step !== 'view') {
@@ -407,11 +435,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const hydrated = await hydrateSheet(meta)
     setSheets((prev) => prev.map((s) => (s.id === sheetId ? hydrated : s)))
     setActiveSheetId(sheetId)
-    celebrationShownRef.current = null
-    setCelebrationSheetId(sheetId)
+    pendingViewCelebrationRef.current = false
+    requestSheetCelebration(sheetId)
     setStep('view')
     return true
-  }, [])
+  }, [requestSheetCelebration])
 
   const openCaptureSheet = useCallback(
     (cellIndex?: number) => {
@@ -514,6 +542,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setCenterColorSlot,
       swapCells,
       completeSheet,
+      openWalkForEdit,
+      openCompleteView,
       canCelebrateSheet,
       markSheetCelebrated,
       getActiveSheet,
@@ -552,6 +582,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setCenterColorSlot,
       swapCells,
       completeSheet,
+      openWalkForEdit,
+      openCompleteView,
       canCelebrateSheet,
       markSheetCelebrated,
       getActiveSheet,

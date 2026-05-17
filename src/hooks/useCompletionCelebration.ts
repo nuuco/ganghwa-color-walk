@@ -3,15 +3,13 @@ import { fireCompletionCelebration } from '../lib/celebrationConfetti'
 
 interface Options {
   sheetId: string
-  themeColor?: string
   shouldCelebrate: boolean
-  onCelebrated: (sheetId: string) => void
+  onCelebrated: () => void
 }
 
 /** 완성 화면 진입 시 1회 축하 연출(컨페티·배너 애니메이션). */
 export function useCompletionCelebration({
   sheetId,
-  themeColor,
   shouldCelebrate,
   onCelebrated,
 }: Options) {
@@ -20,17 +18,21 @@ export function useCompletionCelebration({
   useEffect(() => {
     if (!shouldCelebrate) return
 
-    onCelebrated(sheetId)
     setCelebrating(true)
-    const stopConfetti = fireCompletionCelebration(themeColor)
+    const stopSpawning = fireCompletionCelebration()
 
-    const timer = window.setTimeout(() => setCelebrating(false), 900)
+    const markTimer = window.setTimeout(() => {
+      onCelebrated()
+    }, 100)
+
+    const bannerTimer = window.setTimeout(() => setCelebrating(false), 900)
 
     return () => {
-      stopConfetti()
-      window.clearTimeout(timer)
+      window.clearTimeout(markTimer)
+      window.clearTimeout(bannerTimer)
+      stopSpawning()
     }
-  }, [shouldCelebrate, themeColor, sheetId, onCelebrated])
+  }, [shouldCelebrate, sheetId, onCelebrated])
 
   return { celebrating }
 }

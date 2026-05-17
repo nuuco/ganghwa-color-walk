@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AppBar } from '../components/layout/AppBar'
 import { AppBarAction } from '../components/layout/AppBarAction'
 import { PencilIcon } from '../components/ui/PencilIcon'
@@ -35,7 +35,7 @@ export function ViewPage() {
   const {
     getActiveSheet,
     setStep,
-    setActiveSheetId,
+    openWalkForEdit,
     canCelebrateSheet,
     markSheetCelebrated,
   } = useApp()
@@ -47,10 +47,14 @@ export function ViewPage() {
   const shouldCelebrate = Boolean(sheet && canCelebrateSheet(sheet.id))
   const { celebrating } = useCompletionCelebration({
     sheetId: sheet?.id ?? '',
-    themeColor: sheet?.themeColor,
     shouldCelebrate,
     onCelebrated: markSheetCelebrated,
   })
+
+  useEffect(() => {
+    if (!sheet) return
+    window.scrollTo({ top: 0, left: 0 })
+  }, [sheet?.id])
 
   if (!sheet) {
     return (
@@ -140,8 +144,7 @@ export function ViewPage() {
   }
 
   const handleEdit = () => {
-    setActiveSheetId(sheet.id)
-    setStep('walk')
+    openWalkForEdit(sheet.id)
   }
 
   return (

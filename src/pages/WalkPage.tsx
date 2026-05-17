@@ -14,6 +14,7 @@ export function WalkPage() {
   const {
     getActiveSheet,
     setStep,
+    openCompleteView,
     updateSheet,
     openCaptureSheet,
     openCellDetail,
@@ -143,7 +144,7 @@ export function WalkPage() {
         canComplete={canComplete}
         onComplete={() => void completeSheet(sheet.id)}
         showCompleteCta={sheet.status === 'completed'}
-        onViewComplete={() => setStep('view')}
+        onViewComplete={() => openCompleteView(sheet.id)}
       />
     </div>
   )
