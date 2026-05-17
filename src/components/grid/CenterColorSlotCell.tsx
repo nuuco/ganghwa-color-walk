@@ -15,17 +15,17 @@ export function CenterColorSlotCell({
   imageCrossOrigin,
 }: CenterColorSlotCellProps) {
   return (
-    <div className="grid-cell-center relative aspect-square w-full overflow-hidden rounded-none bg-surface-high">
+    <div className="grid-cell-center grid aspect-square w-full grid-cols-1 grid-rows-1 overflow-hidden rounded-none bg-surface-high">
       {imageUrl ? (
         <img
           src={imageUrl}
           alt=""
-          className="h-full w-full object-cover"
+          className="col-start-1 row-start-1 h-full w-full min-h-0 min-w-0 object-cover"
           crossOrigin={imageCrossOrigin}
         />
       ) : showEmptyPlaceholder ? (
         <div
-          className="h-full w-full border-2 border-dashed"
+          className="col-start-1 row-start-1 h-full w-full min-h-0 min-w-0 border-2 border-dashed"
           style={{ borderColor: themeColor }}
         />
       ) : null}
