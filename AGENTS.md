@@ -36,3 +36,4 @@
 - 완성 수동: 9/9 자동 완성·view 이동 제거·completeSheetInStorage·완성하기 버튼
 - 컬러명 20자·중앙 칸 컬러명·getContrastTextColor 대비 글자색
 - PWA 메인 뒤로가기: standalone 아카이브에서 history 가드·ExitConfirmDialog 종료 확인
+- 중앙 컬러 슬롯: 오버레이에 컬러명 대신 HEX 코드만 표시

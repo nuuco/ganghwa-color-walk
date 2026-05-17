@@ -100,7 +100,6 @@ export function DraggableWalkGrid({
               <CenterColorSlotCell
                 key={cell.index}
                 themeColor={sheet.themeColor}
-                themeLabel={sheet.themeLabel}
                 imageUrl={cell.imageUrl}
                 showEmptyPlaceholder
               />
