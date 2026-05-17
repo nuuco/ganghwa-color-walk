@@ -14,6 +14,7 @@
   --theme-color: #a882e0;
   --page-margin: 20px;
   --grid-gap: 0;
+  --grid-outer-radius: 4px;
 }
 
 @layer base {
@@ -51,14 +52,11 @@
   }
 }
 
+/* 3×3 전체 외곽만 라운드 — 셀마다가 아니라 컨테이너 clip (FIGMA GridCell 4px) */
 .grid-mosaic {
   gap: var(--grid-gap);
-  border-radius: 0;
-}
-
-.grid-mosaic > *,
-.grid-mosaic img {
-  border-radius: 0;
+  border-radius: var(--grid-outer-radius);
+  overflow: hidden;
 }
 
 /* 가운데 십자 여백: 중앙 셀만 gap의 절반만큼 당겨 모자이크가 이어지게 */
