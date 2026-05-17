@@ -46,7 +46,7 @@
 - WalkMemo: 인풋 위「산책 노트」라벨·200자 제한·`12/200` 카운터
 - Primary CTA 통일: primaryButtonClassName·accent 글로우 CTA 제거
 - 완성 엽서: WALK #walkOrdinal 배지 제거
-- themes.ts 프리셋 8종: 표 HEX 반영·갯벌 회색(#8A9A92)·진달래·소창·인삼·고인돌 추가
+- themes.ts 프리셋 8종: 갯벌 회색→강화 하늘색(#85D0F4)·진달래·소창·인삼·고인돌 등
 - themes.ts 채도 상향: 분홍·보라·초록 산뜻한 톤·전 프리셋 비비드 조정
 - 완성 축하 연출: 이벤트 id로 재완성·수정 후 「완성 화면 보기」마다 컨페티·고정 다색 팔레트(테마색 제외)
 - 완성 화면 진입: ViewPage `scrollTo(0)` 상단 스크롤

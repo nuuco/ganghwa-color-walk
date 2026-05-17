@@ -11,6 +11,6 @@ export const THEME_PRESETS: ThemePreset[] = [
   { id: 'mugwort-green', themeLabel: '약쑥 초록', themeColor: '#42C078' },
   { id: 'sochang-white', themeLabel: '소창 하양', themeColor: '#FAFCFA' },
   { id: 'ginseng-berry-red', themeLabel: '인삼 열매 빨강', themeColor: '#E02538' },
-  { id: 'tidal-flat-gray', themeLabel: '갯벌 회색', themeColor: '#72A898' },
+  { id: 'ganghwa-sky-blue', themeLabel: '강화 하늘색', themeColor: '#85D0F4' },
   { id: 'dolmen-stone', themeLabel: '고인돌 바위색', themeColor: '#A09088' },
 ]

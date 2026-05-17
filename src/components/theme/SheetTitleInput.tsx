@@ -26,7 +26,7 @@ export function SheetTitleInput({ value, onChange, error, valid }: SheetTitleInp
           maxLength={SHEET_TEXT_MAX_LENGTH}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="예: 갯벌 산책"
+          placeholder="예: 강화 산책"
           className={`w-full rounded-xl border bg-surface px-4 py-3 pr-10 text-on-surface outline-none focus:ring-1 focus:ring-outline ${borderClass}`}
         />
         {valid ? (
