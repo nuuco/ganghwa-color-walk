@@ -34,25 +34,28 @@ export const PostcardPreview = forwardRef<HTMLElement, PostcardPreviewProps>(
         style={{ backgroundColor: '#201f1f' }}
         aria-label="엽서 미리보기"
       >
-        <header
-          data-postcard-header
-          className="mb-4 flex h-5 max-w-full items-center gap-2"
-        >
-          <span
-            data-postcard-swatch
-            className="size-5 shrink-0 rounded-full border border-white/25"
-            style={{ backgroundColor: sheet.themeColor }}
-            aria-hidden
-          />
-          <span
-            data-export-theme-label
-            className="min-w-0 text-sm font-medium leading-none text-white"
+        <div className="mb-4">
+          <h2 data-postcard-title className="text-xl font-bold leading-snug">
+            {displayTitle}
+          </h2>
+          <div
+            data-postcard-header
+            className="mt-2.5 flex h-4 max-w-full items-center gap-1.5"
           >
-            {sheet.themeLabel}
-          </span>
-        </header>
-
-        <h2 className="mb-4 text-xl font-bold leading-snug">{displayTitle}</h2>
+            <span
+              data-postcard-swatch
+              className="size-4 shrink-0 rounded-full border border-white/25"
+              style={{ backgroundColor: sheet.themeColor }}
+              aria-hidden
+            />
+            <span
+              data-export-theme-label
+              className="min-w-0 text-xs font-medium leading-none text-white"
+            >
+              {sheet.themeLabel}
+            </span>
+          </div>
+        </div>
 
         <div
           className={gridMosaicClassName}
