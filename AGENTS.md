@@ -37,3 +37,4 @@
 - 컬러명 20자·중앙 칸 컬러명·getContrastTextColor 대비 글자색
 - PWA 메인 뒤로가기: standalone 아카이브에서 history 가드·ExitConfirmDialog 종료 확인
 - 중앙 컬러 슬롯: 오버레이에 컬러명 대신 HEX 코드만 표시
+- 아카이브 SheetCard: 완성(9/9)에도 프로그레스바 표시·임시저장 뱃지 제거

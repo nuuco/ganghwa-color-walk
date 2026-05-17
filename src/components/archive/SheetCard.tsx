@@ -25,7 +25,7 @@ export function SheetCard({ sheet, viewMode, onOpen, onDelete }: SheetCardProps)
   const effectiveFilled = getEffectiveFilledCount(sheet)
   const progress = total > 0 ? Math.round((effectiveFilled / total) * 100) : 0
   const dateLabel = formatDate(sheet.completedAt ?? sheet.updatedAt)
-  const badge = sheet.status === 'completed' ? '완성' : '임시저장'
+  const isCompleted = sheet.status === 'completed'
 
   return (
     <article className="rounded-2xl bg-surface p-4">
@@ -40,15 +40,17 @@ export function SheetCard({ sheet, viewMode, onOpen, onDelete }: SheetCardProps)
         <button type="button" onClick={onOpen} className="min-w-0 flex-1 text-left">
           <div className="flex items-center gap-2">
             <h3 className="truncate text-base font-semibold">{sheet.sheetTitle}</h3>
-            <span
-              className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium"
-              style={{
-                backgroundColor: `${sheet.themeColor}33`,
-                color: sheet.themeColor,
-              }}
-            >
-              {badge}
-            </span>
+            {isCompleted ? (
+              <span
+                className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium"
+                style={{
+                  backgroundColor: `${sheet.themeColor}33`,
+                  color: sheet.themeColor,
+                }}
+              >
+                완성
+              </span>
+            ) : null}
           </div>
           <div className="mt-1 flex items-center gap-2 text-sm text-on-surface-variant">
             <ThemeColorLabel themeLabel={sheet.themeLabel} themeColor={sheet.themeColor} />
@@ -110,16 +112,14 @@ export function SheetCard({ sheet, viewMode, onOpen, onDelete }: SheetCardProps)
         </button>
       ) : null}
 
-      {sheet.status !== 'completed' ? (
+      <div
+        className={`h-0.5 overflow-hidden rounded-full bg-surface-high ${viewMode === 'bento' ? 'mt-3' : 'mt-2'}`}
+      >
         <div
-          className={`h-0.5 overflow-hidden rounded-full bg-surface-high ${viewMode === 'bento' ? 'mt-3' : 'mt-2'}`}
-        >
-          <div
-            className="h-full rounded-full transition-all"
-            style={{ width: `${progress}%`, backgroundColor: sheet.themeColor }}
-          />
-        </div>
-      ) : null}
+          className="h-full rounded-full transition-all"
+          style={{ width: `${progress}%`, backgroundColor: sheet.themeColor }}
+        />
+      </div>
     </article>
   )
 }
