@@ -48,5 +48,5 @@
 - themes.ts 프리셋 8종: 표 HEX 반영·갯벌 회색(#8A9A92)·진달래·소창·인삼·고인돌 추가
 - themes.ts 채도 상향: 분홍·보라·초록 산뜻한 톤·전 프리셋 비비드 조정
 - 완성 축하 연출: canvas-confetti·테마색 팔레트·SummaryBanner 팝·완성 직후 1회만
-- 3×3 그리드 gap 2px·가운데 셀 margin 당김(grid-mosaic)·walk·엽서·아카이브 벤토 공통
-- 그리드 셀 라운드 제거: `rounded-cell` 0px (walk·엽서·벤토·컬러슬롯)
+- 3×3 그리드 gap 0·가운데 셀 margin 당김(grid-mosaic)·walk·엽서·아카이브 벤토 공통
+- 그리드 라운드 제거: `rounded-none`·`.grid-mosaic` 자식·img `border-radius: 0`·`borderRadius.cell` 토큰 삭제

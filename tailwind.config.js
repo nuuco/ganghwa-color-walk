@@ -20,10 +20,7 @@ export default {
       },
       spacing: {
         page: '20px',
-        'grid-gap': '2px',
-      },
-      borderRadius: {
-        cell: '0',
+        'grid-gap': '0',
       },
       fontFamily: {
         sans: [

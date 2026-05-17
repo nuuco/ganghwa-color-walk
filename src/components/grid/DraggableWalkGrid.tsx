@@ -120,7 +120,7 @@ export function DraggableWalkGrid({
       </div>
       <DragOverlay dropAnimation={dropAnimation} className="touch-none">
         {activeCell?.imageUrl ? (
-          <div className="aspect-square w-[calc((100vw-2*var(--page-padding,1.25rem))/3)] max-w-[140px] scale-[1.02] overflow-hidden rounded-cell shadow-lg ring-2 ring-white/30">
+          <div className="aspect-square w-[calc((100vw-2*var(--page-padding,1.25rem))/3)] max-w-[140px] scale-[1.02] overflow-hidden rounded-none shadow-lg ring-2 ring-white/30">
             <img
               src={activeCell.imageUrl}
               alt=""

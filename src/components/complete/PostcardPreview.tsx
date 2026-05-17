@@ -73,7 +73,7 @@ export const PostcardPreview = forwardRef<HTMLElement, PostcardPreviewProps>(
             return (
               <div
                 key={cell.index}
-                className={`relative aspect-square overflow-hidden rounded-cell bg-surface-high${
+                className={`relative aspect-square overflow-hidden rounded-none bg-surface-high${
                   cell.index === centerIndex ? ' grid-cell-center' : ''
                 }`}
               >

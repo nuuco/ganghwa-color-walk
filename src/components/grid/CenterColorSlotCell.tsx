@@ -15,7 +15,7 @@ export function CenterColorSlotCell({
   imageCrossOrigin,
 }: CenterColorSlotCellProps) {
   return (
-    <div className="grid-cell-center relative aspect-square w-full overflow-hidden rounded-cell bg-surface-high">
+    <div className="grid-cell-center relative aspect-square w-full overflow-hidden rounded-none bg-surface-high">
       {imageUrl ? (
         <img
           src={imageUrl}

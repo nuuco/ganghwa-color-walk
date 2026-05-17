@@ -15,7 +15,7 @@ export function GridCell({ index, variant, imageUrl, themeColor, onClick }: Grid
     <button
       type="button"
       onClick={onClick}
-      className="relative aspect-square w-full overflow-hidden rounded-cell bg-surface-high"
+      className="relative aspect-square w-full overflow-hidden rounded-none bg-surface-high"
       aria-label={filled ? `칸 ${index + 1} 사진 보기` : `칸 ${index + 1} 사진 추가`}
     >
       {imageUrl ? (

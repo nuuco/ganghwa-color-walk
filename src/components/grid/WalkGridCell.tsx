@@ -63,13 +63,13 @@ export function WalkGridCell({
   return (
     <div
       ref={setNodeRef}
-      className={`relative aspect-square w-full overflow-hidden rounded-cell bg-surface-high ${className}`.trim()}
+      className={`relative aspect-square w-full overflow-hidden rounded-none bg-surface-high ${className}`.trim()}
       style={cellStyle}
     >
       <button
         type="button"
         onClick={onClick}
-        className="relative h-full w-full overflow-hidden"
+        className="relative h-full w-full overflow-hidden rounded-none"
         aria-label={filled ? `칸 ${index + 1} 사진 보기` : `칸 ${index + 1} 사진 추가`}
       >
         {imageUrl ? (

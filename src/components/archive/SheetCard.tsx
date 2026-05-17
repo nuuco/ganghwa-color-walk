@@ -87,7 +87,7 @@ export function SheetCard({ sheet, viewMode, onOpen, onEdit, onDelete }: SheetCa
             return (
               <div
                 key={cell.index}
-                className={`aspect-square overflow-hidden rounded-cell bg-surface-high${
+                className={`aspect-square overflow-hidden rounded-none bg-surface-high${
                   cell.index === centerIndex ? ' grid-cell-center' : ''
                 }`}
               >
