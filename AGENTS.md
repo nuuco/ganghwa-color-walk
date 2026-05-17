@@ -52,3 +52,4 @@
 - 3×3 그리드 gap 0·가운데 셀 margin 당김(grid-mosaic)·walk·엽서·아카이브 벤토 공통
 - 그리드 외곽 라운드: `.grid-mosaic` `overflow:hidden`·`--grid-outer-radius: 4px`·셀 내부는 직각
 - 엽서 export 중앙 HEX: `absolute inset-0`→그리드 스택·html2canvas 배경 위치 어긋남 수정
+- README 현행화: 아카이브·테마·walk·view·PWA·기술스택·흐름도·배포 URL 반영
