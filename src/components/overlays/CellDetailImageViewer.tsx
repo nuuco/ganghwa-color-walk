@@ -44,11 +44,13 @@ export function CellDetailImageViewer({ imageUrl }: CellDetailImageViewerProps) 
   const containerRef = useRef<HTMLDivElement>(null)
   const transformRef = useRef<ReactZoomPanPinchRef | null>(null)
   const fitScaleRef = useRef(1)
+  const isGesturingRef = useRef(false)
   const [scaleBounds, setScaleBounds] = useState<{ min: number; max: number } | null>(null)
 
   const applyFit = useCallback((img: HTMLImageElement) => {
     const container = containerRef.current
     if (!container || !img.naturalWidth || !img.naturalHeight) return
+    if (isGesturingRef.current) return
 
     const fit = computeFitScale(
       container.clientWidth,
@@ -57,20 +59,33 @@ export function CellDetailImageViewer({ imageUrl }: CellDetailImageViewerProps) 
       img.naturalHeight,
     )
     fitScaleRef.current = fit
-    setScaleBounds({ min: fit, max: fit * MAX_ZOOM_FACTOR })
 
-    const { positionX, positionY, scale } = getFitTransform(
+    const nextBounds = { min: fit, max: fit * MAX_ZOOM_FACTOR }
+    setScaleBounds((prev) =>
+      prev && prev.min === nextBounds.min && prev.max === nextBounds.max ? prev : nextBounds,
+    )
+
+    const { positionX, positionY } = getFitTransform(
       container.clientWidth,
       container.clientHeight,
       img.naturalWidth,
       img.naturalHeight,
       fit,
     )
-    transformRef.current?.setTransform(positionX, positionY, scale, 0)
+    transformRef.current?.setTransform(positionX, positionY, fit, 0)
+  }, [])
+
+  const markGesturing = useCallback(() => {
+    isGesturingRef.current = true
+  }, [])
+
+  const clearGesturing = useCallback(() => {
+    isGesturingRef.current = false
   }, [])
 
   useEffect(() => {
     fitScaleRef.current = 1
+    isGesturingRef.current = false
     setScaleBounds(null)
   }, [imageUrl])
 
@@ -79,7 +94,7 @@ export function CellDetailImageViewer({ imageUrl }: CellDetailImageViewerProps) 
     if (!container || !scaleBounds) return
 
     const observer = new ResizeObserver(() => {
-      const img = container.querySelector('img')
+      const img = container.querySelector('img[data-zoom]')
       if (img instanceof HTMLImageElement && img.naturalWidth) {
         applyFit(img)
       }
@@ -96,7 +111,10 @@ export function CellDetailImageViewer({ imageUrl }: CellDetailImageViewerProps) 
   )
 
   return (
-    <div ref={containerRef} className="relative flex min-h-0 w-full flex-1 touch-none select-none">
+    <div
+      ref={containerRef}
+      className="relative min-h-0 w-full flex-1 touch-none select-none overflow-hidden"
+    >
       {!scaleBounds ? (
         <img
           src={imageUrl}
@@ -115,28 +133,34 @@ export function CellDetailImageViewer({ imageUrl }: CellDetailImageViewerProps) 
           maxScale={scaleBounds.max}
           limitToBounds
           wheel={{ disabled: true }}
-          pinch={{ step: 5 }}
+          pinch={{ step: 5, disabled: false }}
           panning={{ velocityDisabled: true }}
           doubleClick={{ disabled: true }}
+          onPinchStart={markGesturing}
+          onPinchStop={clearGesturing}
+          onPanningStart={markGesturing}
+          onPanningStop={clearGesturing}
           onInit={(ref) => {
             transformRef.current = ref
-            const img = containerRef.current?.querySelector('img')
+            const img = containerRef.current?.querySelector('img[data-zoom]')
             if (img instanceof HTMLImageElement && img.naturalWidth) {
               applyFit(img)
             }
           }}
         >
           <TransformComponent
-            wrapperClass="!h-full !w-full"
+            wrapperClass="!absolute !inset-0"
+            wrapperStyle={{ width: '100%', height: '100%', touchAction: 'none' }}
             contentClass="!inline-block"
           >
             <img
+              data-zoom
               src={imageUrl}
               alt=""
               draggable={false}
               onLoad={handleImageLoad}
-              className="pointer-events-none max-h-none max-w-none"
-              style={{ display: 'block' }}
+              className="max-h-none max-w-none"
+              style={{ display: 'block', touchAction: 'none' }}
             />
           </TransformComponent>
         </TransformWrapper>

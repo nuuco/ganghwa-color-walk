@@ -59,3 +59,4 @@
 - S04 엽서 헤더: 스와치+흰 컬러명·푸터 @강화 컬러워크(웹 flex 정렬)
 - 엽서 export 보정: exportPostcardFix onclone·폰트 ready·컬러명 baseline·잘림 방지(화면 스타일 무변경)
 - O02 셀 상세: fit+핀치줌(react-zoom-pan-pinch)·h-dvh·하단 버튼 고정
+- O02 핀치줌 수정: Transform wrapper `touch-action:none`·전체 영역 absolute·제스처 중 applyFit 스킵
