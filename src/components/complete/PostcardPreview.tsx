@@ -92,17 +92,8 @@ export const PostcardPreview = forwardRef<HTMLElement, PostcardPreviewProps>(
           </p>
         ) : null}
 
-        <footer className="mt-4 flex items-end justify-between gap-3">
+        <footer className="mt-4 text-right">
           <p className="text-xs text-on-surface-variant">{completedLabel}</p>
-          {sheet.walkOrdinal ? (
-            <span
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-outline-variant/60 text-center text-[9px] font-bold leading-tight tracking-tight"
-              style={{ color: sheet.themeColor }}
-            >
-              WALK
-              <br />#{sheet.walkOrdinal}
-            </span>
-          ) : null}
         </footer>
       </section>
     )

@@ -44,4 +44,5 @@
 - 텍스트 선택: accent #f7941e·흰 글자(::selection)
 - WalkMemo: 인풋 위「산책 노트」라벨·FIGMA placeholder
 - Primary CTA 통일: primaryButtonClassName·accent 글로우 CTA 제거
+- 완성 엽서: WALK #walkOrdinal 배지 제거
 - themes.ts 프리셋 8종: 표 HEX 반영·갯벌 회색(#8A9A92)·진달래·소창·인삼·고인돌 추가
