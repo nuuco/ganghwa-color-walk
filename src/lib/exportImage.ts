@@ -1,4 +1,5 @@
 import html2canvas, { type Options as Html2CanvasOptions } from 'html2canvas'
+import { applyPostcardExportFixes } from './exportPostcardFix'
 
 const DEFAULT_CAPTURE_OPTIONS: Partial<Html2CanvasOptions> = {
   scale: 3,
@@ -10,9 +11,17 @@ export async function capturePostcardElement(
   el: HTMLElement,
   options?: Partial<Html2CanvasOptions>,
 ): Promise<HTMLCanvasElement> {
+  if (typeof document !== 'undefined' && document.fonts?.ready) {
+    await document.fonts.ready
+  }
+
   return html2canvas(el, {
     ...DEFAULT_CAPTURE_OPTIONS,
     ...options,
+    onclone: (clonedDoc, element) => {
+      applyPostcardExportFixes(clonedDoc)
+      options?.onclone?.(clonedDoc, element)
+    },
   })
 }
 

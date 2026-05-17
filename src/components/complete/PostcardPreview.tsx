@@ -34,16 +34,19 @@ export const PostcardPreview = forwardRef<HTMLElement, PostcardPreviewProps>(
         style={{ backgroundColor: '#201f1f' }}
         aria-label="엽서 미리보기"
       >
-        <header className="mb-4 flex items-center justify-between gap-2">
-          <span className="text-[10px] font-semibold tracking-[0.2em] text-on-surface-variant">
-            COLOR WALK
-          </span>
+        <header
+          data-postcard-header
+          className="mb-4 flex h-5 max-w-full items-center gap-2"
+        >
           <span
-            className="rounded-full px-2.5 py-0.5 text-[10px] font-medium"
-            style={{
-              backgroundColor: `${sheet.themeColor}33`,
-              color: sheet.themeColor,
-            }}
+            data-postcard-swatch
+            className="size-5 shrink-0 rounded-full border border-white/25"
+            style={{ backgroundColor: sheet.themeColor }}
+            aria-hidden
+          />
+          <span
+            data-export-theme-label
+            className="min-w-0 text-sm font-medium leading-none text-white"
           >
             {sheet.themeLabel}
           </span>
@@ -96,8 +99,16 @@ export const PostcardPreview = forwardRef<HTMLElement, PostcardPreviewProps>(
           </p>
         ) : null}
 
-        <footer className="mt-4 text-right">
-          <p className="text-xs text-on-surface-variant">{completedLabel}</p>
+        <footer className="mt-4 flex items-center justify-between gap-2">
+          <p
+            data-export-footer-attribution
+            className="shrink-0 text-[10px] leading-none text-on-surface-variant"
+          >
+            @강화 컬러워크
+          </p>
+          <p className="shrink-0 text-xs leading-none text-on-surface-variant">
+            {completedLabel}
+          </p>
         </footer>
       </section>
     )
