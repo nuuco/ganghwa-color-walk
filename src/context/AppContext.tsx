@@ -79,6 +79,7 @@ interface AppContextValue {
   fileError: string | null
   importNotice: string | null
   themeDraft: ThemeDraft
+  themeEditSheetId: string | null
   captureSheetOpen: boolean
   cellDetailOpen: boolean
   confirmDeleteOpen: boolean
@@ -88,6 +89,7 @@ interface AppContextValue {
   setActiveSheetId: (id: string | null) => void
   setThemeDraft: (draft: Partial<ThemeDraft>) => void
   resetThemeDraft: () => void
+  openThemeEdit: (sheetId: string) => void
   clearFileError: () => void
   clearImportNotice: () => void
   openCaptureSheet: (cellIndex?: number) => void
@@ -97,7 +99,7 @@ interface AppContextValue {
   openConfirmDelete: (target: DeleteTarget) => void
   closeConfirmDelete: () => void
   confirmDelete: () => Promise<void>
-  createSheetFromDraft: () => Promise<string | null>
+  submitThemeDraft: () => Promise<string | null>
   setCellsFromFiles: (files: File[]) => Promise<void>
   deleteSheet: (sheetId: string) => Promise<void>
   updateSheet: (sheetId: string, patch: Partial<ColorWalkSheet>) => Promise<void>
@@ -118,6 +120,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [fileError, setFileError] = useState<string | null>(null)
   const [importNotice, setImportNotice] = useState<string | null>(null)
   const [themeDraft, setThemeDraftState] = useState<ThemeDraft>(defaultThemeDraft)
+  const [themeEditSheetId, setThemeEditSheetId] = useState<string | null>(null)
   const [captureSheetOpen, setCaptureSheetOpen] = useState(false)
   const [cellDetailOpen, setCellDetailOpen] = useState(false)
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false)
@@ -145,7 +148,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const resetThemeDraft = useCallback(() => {
     setThemeDraftState(defaultThemeDraft)
+    setThemeEditSheetId(null)
   }, [])
+
+  const openThemeEdit = useCallback(
+    (sheetId: string) => {
+      const sheet = sheets.find((s) => s.id === sheetId)
+      if (!sheet) return
+      setThemeDraftState({
+        sheetTitle: sheet.sheetTitle,
+        themeId: sheet.themeId,
+        themeLabel: sheet.themeLabel,
+        themeColor: sheet.themeColor,
+      })
+      setThemeEditSheetId(sheetId)
+      setActiveSheetId(sheetId)
+    },
+    [sheets],
+  )
 
   const clearFileError = useCallback(() => {
     setFileError(null)
@@ -191,10 +211,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setActiveSheetId((current) => (current === sheetId ? null : current))
   }, [])
 
-  const createSheetFromDraft = useCallback(async () => {
+  const submitThemeDraft = useCallback(async () => {
     const title = themeDraft.sheetTitle.trim()
     const label = themeDraft.themeLabel.trim()
     if (!isValidSheetTitle(title) || !isValidThemeLabel(label)) return null
+
+    if (themeEditSheetId) {
+      await updateSheet(themeEditSheetId, {
+        sheetTitle: title,
+        themeId: themeDraft.themeId,
+        themeLabel: label,
+        themeColor: themeDraft.themeColor,
+        postcardHeadline: label,
+      })
+      setThemeEditSheetId(null)
+      setStep('archive')
+      return themeEditSheetId
+    }
 
     const id = createSheetId()
     const meta = await createSheetMeta({
@@ -229,7 +262,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setActiveSheetId(id)
     setStep('walk')
     return id
-  }, [themeDraft])
+  }, [themeDraft, themeEditSheetId, updateSheet])
 
   const setCellsFromFiles = useCallback(
     async (files: File[]) => {
@@ -431,6 +464,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       fileError,
       importNotice,
       themeDraft,
+      themeEditSheetId,
       captureSheetOpen,
       cellDetailOpen,
       confirmDeleteOpen,
@@ -440,6 +474,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setActiveSheetId,
       setThemeDraft,
       resetThemeDraft,
+      openThemeEdit,
       clearFileError,
       clearImportNotice,
       openCaptureSheet,
@@ -449,7 +484,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       openConfirmDelete,
       closeConfirmDelete,
       confirmDelete,
-      createSheetFromDraft,
+      submitThemeDraft,
       setCellsFromFiles,
       deleteSheet,
       updateSheet,
@@ -467,6 +502,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       fileError,
       importNotice,
       themeDraft,
+      themeEditSheetId,
       captureSheetOpen,
       cellDetailOpen,
       confirmDeleteOpen,
@@ -474,6 +510,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       activeCellIndex,
       setThemeDraft,
       resetThemeDraft,
+      openThemeEdit,
       clearFileError,
       clearImportNotice,
       openCaptureSheet,
@@ -483,7 +520,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       openConfirmDelete,
       closeConfirmDelete,
       confirmDelete,
-      createSheetFromDraft,
+      submitThemeDraft,
       setCellsFromFiles,
       deleteSheet,
       updateSheet,

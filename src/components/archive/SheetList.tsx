@@ -6,10 +6,17 @@ interface SheetListProps {
   sheets: ColorWalkSheet[]
   viewMode: ArchiveViewMode
   onOpenSheet: (sheet: ColorWalkSheet) => void
+  onEditSheet: (sheet: ColorWalkSheet) => void
   onDeleteSheet: (sheetId: string) => void
 }
 
-export function SheetList({ sheets, viewMode, onOpenSheet, onDeleteSheet }: SheetListProps) {
+export function SheetList({
+  sheets,
+  viewMode,
+  onOpenSheet,
+  onEditSheet,
+  onDeleteSheet,
+}: SheetListProps) {
   const sorted = [...sheets].sort(
     (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
   )
@@ -22,6 +29,7 @@ export function SheetList({ sheets, viewMode, onOpenSheet, onDeleteSheet }: Shee
             sheet={sheet}
             viewMode={viewMode}
             onOpen={() => onOpenSheet(sheet)}
+            onEdit={() => onEditSheet(sheet)}
             onDelete={() => onDeleteSheet(sheet.id)}
           />
         </li>

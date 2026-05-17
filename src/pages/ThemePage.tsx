@@ -10,8 +10,16 @@ import { useApp } from '../context/AppContext'
 import type { ThemePreset } from '../data/themes'
 
 export function ThemePage() {
-  const { themeDraft, setThemeDraft, setStep, createSheetFromDraft } = useApp()
+  const {
+    themeDraft,
+    themeEditSheetId,
+    setThemeDraft,
+    resetThemeDraft,
+    setStep,
+    submitThemeDraft,
+  } = useApp()
   const [isRandomSpinning, setIsRandomSpinning] = useState(false)
+  const isEditing = themeEditSheetId !== null
 
   const titleTrim = themeDraft.sheetTitle.trim()
   const labelTrim = themeDraft.themeLabel.trim()
@@ -53,13 +61,22 @@ export function ThemePage() {
     setThemeDraft({ themeId: 'custom', themeColor: color })
   }
 
+  const handleBack = () => {
+    resetThemeDraft()
+    setStep('archive')
+  }
+
   const handleCta = async () => {
-    await createSheetFromDraft()
+    await submitThemeDraft()
   }
 
   return (
     <div className="flex min-h-dvh flex-col pb-40">
-      <AppBar title="새 컬러워크" showBack onBack={() => setStep('archive')} />
+      <AppBar
+        title={isEditing ? '컬러워크 수정' : '새 컬러워크'}
+        showBack
+        onBack={handleBack}
+      />
       <div className="flex flex-col gap-5 py-4">
         <SheetTitleInput
           value={themeDraft.sheetTitle}
@@ -81,7 +98,7 @@ export function ThemePage() {
       <ThemeStickyBar
         themeColor={themeDraft.themeColor}
         themeLabel={themeDraft.themeLabel}
-        ctaLabel="이 색으로 산책하기"
+        ctaLabel={isEditing ? '수정하기' : '이 색으로 산책하기'}
         disabled={ctaDisabled}
         onCta={handleCta}
       />

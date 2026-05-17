@@ -3,11 +3,13 @@ import type { ColorWalkSheet } from '../../types/sheet'
 import { DEFAULT_COLS, DEFAULT_ROWS, getEffectiveFilledCount, isCenterColorSlot } from '../../config/grid'
 import { CenterColorSlotCell } from '../grid/CenterColorSlotCell'
 import { ThemeColorLabel } from '../ui/ThemeColorLabel'
+import { SheetCardOverflowMenu } from './SheetCardOverflowMenu'
 
 interface SheetCardProps {
   sheet: ColorWalkSheet
   viewMode: ArchiveViewMode
   onOpen: () => void
+  onEdit: () => void
   onDelete: () => void
 }
 
@@ -20,7 +22,7 @@ function formatDate(iso?: string): string {
   })
 }
 
-export function SheetCard({ sheet, viewMode, onOpen, onDelete }: SheetCardProps) {
+export function SheetCard({ sheet, viewMode, onOpen, onEdit, onDelete }: SheetCardProps) {
   const total = sheet.rows * sheet.cols
   const effectiveFilled = getEffectiveFilledCount(sheet)
   const progress = total > 0 ? Math.round((effectiveFilled / total) * 100) : 0
@@ -28,16 +30,11 @@ export function SheetCard({ sheet, viewMode, onOpen, onDelete }: SheetCardProps)
   const isCompleted = sheet.status === 'completed'
 
   return (
-    <article className="rounded-2xl bg-surface p-4">
+    <article className="overflow-visible rounded-2xl bg-surface py-4 pl-4 pr-1">
       <div
-        className={[
-          'flex items-start justify-between gap-2',
-          viewMode === 'bento' ? 'mb-3' : '',
-        ]
-          .filter(Boolean)
-          .join(' ')}
+        className={['flex items-start', viewMode === 'bento' ? 'mb-3' : ''].filter(Boolean).join(' ')}
       >
-        <button type="button" onClick={onOpen} className="min-w-0 flex-1 text-left">
+        <button type="button" onClick={onOpen} className="min-w-0 flex-1 pr-1 text-left">
           <div className="flex items-center gap-2">
             <h3 className="truncate text-base font-semibold">{sheet.sheetTitle}</h3>
             {isCompleted ? (
@@ -62,14 +59,7 @@ export function SheetCard({ sheet, viewMode, onOpen, onDelete }: SheetCardProps)
             ) : null}
           </div>
         </button>
-        <button
-          type="button"
-          onClick={onDelete}
-          className="flex h-11 w-11 shrink-0 items-center justify-center text-on-surface-variant"
-          aria-label="시트 메뉴"
-        >
-          ⋮
-        </button>
+        <SheetCardOverflowMenu onEdit={onEdit} onDelete={onDelete} />
       </div>
 
       {viewMode === 'bento' ? (

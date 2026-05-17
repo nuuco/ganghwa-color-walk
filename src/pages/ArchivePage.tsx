@@ -34,8 +34,15 @@ function ArchiveStickyHeader({
 }
 
 export function ArchivePage() {
-  const { sheets, isHydrating, setStep, setActiveSheetId, resetThemeDraft, openConfirmDelete } =
-    useApp()
+  const {
+    sheets,
+    isHydrating,
+    setStep,
+    setActiveSheetId,
+    resetThemeDraft,
+    openThemeEdit,
+    openConfirmDelete,
+  } = useApp()
   const { viewMode, setViewMode } = useArchiveViewMode()
   const {
     open: installOpen,
@@ -65,6 +72,11 @@ export function ArchivePage() {
     } else {
       setStep('walk')
     }
+  }
+
+  const handleEditSheet = (sheet: ColorWalkSheet) => {
+    openThemeEdit(sheet.id)
+    setStep('theme')
   }
 
   const isEmpty = sheets.length === 0
@@ -121,6 +133,7 @@ export function ArchivePage() {
             sheets={sheets}
             viewMode={viewMode}
             onOpenSheet={handleOpenSheet}
+            onEditSheet={handleEditSheet}
             onDeleteSheet={(id) => openConfirmDelete({ type: 'sheet', sheetId: id })}
           />
         )}
