@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { SHEET_TEXT_MAX_LENGTH } from '../../config/textLimits'
 import { CustomColorPicker } from '../theme/CustomColorPicker'
+import { primaryButtonClassName } from '../ui/primaryButton'
 
 interface ThemeEditModalProps {
   open: boolean
@@ -80,7 +81,7 @@ export function ThemeEditModal({
             type="button"
             onClick={handleSave}
             disabled={!labelValid}
-            className="flex h-12 flex-1 items-center justify-center rounded-xl bg-accent text-sm font-semibold text-on-accent shadow-[0_4px_14px_rgba(247,148,30,0.35)] disabled:cursor-not-allowed disabled:opacity-40"
+            className={`flex h-12 flex-1 items-center justify-center rounded-xl text-sm ${primaryButtonClassName}`}
           >
             저장
           </button>

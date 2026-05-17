@@ -1,4 +1,5 @@
 import { SHEET_TEXT_MAX_LENGTH } from '../../config/textLimits'
+import { primaryButtonClassName } from '../ui/primaryButton'
 
 interface CustomColorPickerProps {
   themeColor: string
@@ -38,16 +39,16 @@ export function CustomColorPicker({
       <div className="flex flex-col items-center gap-5">
         <label className="group relative block h-[7.5rem] w-[7.5rem] cursor-pointer">
           <span
-            className="pointer-events-none absolute -inset-2 rounded-full bg-accent/15 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100"
+            className="pointer-events-none absolute -inset-2 rounded-full bg-white/10 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100"
             aria-hidden
           />
           <span
-            className="block h-full w-full overflow-hidden rounded-full shadow-[0_8px_24px_rgba(0,0,0,0.35)] ring-[3px] ring-accent ring-offset-4 ring-offset-surface-high"
+            className="block h-full w-full overflow-hidden rounded-full shadow-[0_8px_24px_rgba(0,0,0,0.35)] ring-[3px] ring-white/25 ring-offset-4 ring-offset-surface-high"
             style={{ backgroundColor: themeColor }}
             aria-hidden
           />
           <span
-            className="pointer-events-none absolute bottom-0 right-0 flex h-9 w-9 items-center justify-center rounded-full bg-accent text-sm font-bold text-on-accent shadow-md"
+            className={`pointer-events-none absolute bottom-0 right-0 flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold shadow-md ${primaryButtonClassName}`}
             aria-hidden
           >
             +
@@ -61,7 +62,7 @@ export function CustomColorPicker({
           />
         </label>
 
-        <p className="rounded-full bg-accent px-4 py-1.5 font-mono text-sm font-semibold tracking-wide text-on-accent shadow-sm">
+        <p className="font-mono text-sm font-semibold tracking-wide text-white">
           {themeColor.toUpperCase()}
         </p>
 

@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { AppBar } from '../components/layout/AppBar'
 import { DraggableWalkGrid } from '../components/grid/DraggableWalkGrid'
-import { CenterColorSlotToggle } from '../components/walk/CenterColorSlotToggle'
 import { DEFAULT_CELL_COUNT, getEffectiveFilledCount, isCenterColorSlot } from '../config/grid'
 import { WalkHeader } from '../components/walk/WalkHeader'
 import { ThemeHintBar } from '../components/walk/ThemeHintBar'
@@ -115,10 +114,11 @@ export function WalkPage() {
           void updateSheet(sheet.id, { themeLabel, themeColor, themeId: 'custom' })
         }
       />
-      <ThemeHintBar themeLabel={sheet.themeLabel} themeColor={sheet.themeColor} />
-      <CenterColorSlotToggle
-        enabled={sheet.centerColorSlot}
-        onChange={(enabled) => void setCenterColorSlot(sheet.id, enabled)}
+      <ThemeHintBar
+        themeLabel={sheet.themeLabel}
+        themeColor={sheet.themeColor}
+        centerColorSlot={sheet.centerColorSlot}
+        onCenterColorSlotChange={(enabled) => void setCenterColorSlot(sheet.id, enabled)}
       />
       <DraggableWalkGrid
         sheet={sheet}

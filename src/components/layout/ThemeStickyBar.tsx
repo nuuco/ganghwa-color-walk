@@ -1,3 +1,5 @@
+import { primaryButtonClassName } from '../ui/primaryButton'
+
 interface ThemeStickyBarProps {
   themeColor: string
   themeLabel: string
@@ -30,7 +32,7 @@ export function ThemeStickyBar({
         type="button"
         disabled={disabled}
         onClick={onCta}
-        className="flex h-12 w-full items-center justify-center rounded-xl bg-primary text-base font-semibold text-on-primary disabled:cursor-not-allowed disabled:opacity-40"
+        className={`flex h-12 w-full items-center justify-center rounded-xl text-base ${primaryButtonClassName}`}
       >
         {ctaLabel}
       </button>

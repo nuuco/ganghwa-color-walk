@@ -1,3 +1,5 @@
+import { primaryButtonClassName } from '../ui/primaryButton'
+
 interface WalkProgressFooterProps {
   filledCount: number
   total: number
@@ -25,7 +27,7 @@ export function WalkProgressFooter({
         <button
           type="button"
           onClick={onComplete}
-          className="mb-3 w-full rounded-xl bg-primary py-3 text-sm font-semibold text-on-primary"
+          className={`mb-3 w-full rounded-xl py-3 text-sm ${primaryButtonClassName}`}
         >
           완성하기
         </button>
@@ -34,7 +36,7 @@ export function WalkProgressFooter({
         <button
           type="button"
           onClick={onViewComplete}
-          className="mb-3 w-full rounded-xl bg-primary py-3 text-sm font-semibold text-on-primary"
+          className={`mb-3 w-full rounded-xl py-3 text-sm ${primaryButtonClassName}`}
         >
           완성 화면 보기
         </button>

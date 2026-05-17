@@ -22,6 +22,7 @@
 - InstallPromptBanner TS2367: Android 분기 중복 `android-installable` 비교 제거·네이티브 설치 실패 시 바로 단계 펼침
 - 공통 버튼·토글 고정색: `bg-primary`(#fff)만 사용·`--theme-color` DOM 주입·ExportActions 테마 배경 제거
 - 중앙 컬러 토글 ON: `bg-on-surface`+`bg-background` 손잡이(테마색·흰-on-흰 제거)
+- 가운데 색 토글: ThemeHintBar 한 줄(칩 우측)·「가운데 색」
 - S03 빈 GridCell: 점선 테두리+중앙 `+`(themeColor, FIGMA GridCell Empty)
 - Walk 그리드 DnD: 채워진 칸 핸들 드래그·빈/채움 칸 드롭·`moveOrSwapCells` Blob 스왑·중앙 컬러 슬롯 ON 시 중앙 제외
 - S01 아카이브: sticky PageHeader·보기 토글(간략 기본·벤토 3×3)·localStorage 유지
@@ -42,4 +43,5 @@
 - 아카이브 수정: ThemePage(기존 시트 값)·CTA「수정하기」·저장 후 archive
 - 텍스트 선택: accent #f7941e·흰 글자(::selection)
 - WalkMemo: 인풋 위「산책 노트」라벨·FIGMA placeholder
+- Primary CTA 통일: primaryButtonClassName·accent 글로우 CTA 제거
 - themes.ts 프리셋 8종: 표 HEX 반영·갯벌 회색(#8A9A92)·진달래·소창·인삼·고인돌 추가
