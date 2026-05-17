@@ -66,15 +66,39 @@ async function applyCompletionFields(
   let walkOrdinal = meta.walkOrdinal
   let completedAt = meta.completedAt
 
-  if (effective >= required && status !== 'completed') {
-    status = 'completed'
-    walkOrdinal = meta.walkOrdinal ?? (await countCompletedSheets()) + 1
-    completedAt = meta.completedAt ?? nowIso()
-  } else if (status === 'completed' && effective < required) {
+  if (status === 'completed' && effective < required) {
     status = 'in_progress'
   }
 
   return { status, walkOrdinal, completedAt }
+}
+
+export async function completeSheetInStorage(
+  sheetId: string,
+): Promise<StoredSheetMeta | null> {
+  const meta = await getSheetMeta(sheetId)
+  if (!meta || meta.status === 'completed') return meta
+
+  const required = meta.rows * meta.cols
+  const filledCount = Object.keys(meta.cells).length
+  const effective = computeEffectiveFilledCount({
+    filledCount,
+    centerColorSlot: meta.centerColorSlot ?? false,
+    centerHasPhoto: centerHasPhotoInCells(meta, meta.cells),
+  })
+  if (effective < required) return null
+
+  const next: StoredSheetMeta = {
+    ...meta,
+    status: 'completed',
+    walkOrdinal: meta.walkOrdinal ?? (await countCompletedSheets()) + 1,
+    completedAt: meta.completedAt ?? nowIso(),
+    updatedAt: nowIso(),
+  }
+  await saveSheetMeta(next)
+  const index = await getIndex()
+  await saveIndex(await sortIndexByUpdatedAt(index))
+  return next
 }
 
 export async function getIndex(): Promise<SheetsIndex> {

@@ -24,6 +24,7 @@ export function WalkPage() {
     clearImportNotice,
     setCenterColorSlot,
     swapCells,
+    completeSheet,
   } = useApp()
 
   const sheet = getActiveSheet()
@@ -64,6 +65,8 @@ export function WalkPage() {
 
   const total = sheet.rows * sheet.cols
   const effectiveFilled = getEffectiveFilledCount(sheet)
+  const canComplete =
+    sheet.status !== 'completed' && effectiveFilled >= (total || DEFAULT_CELL_COUNT)
 
   const handleCellClick = (index: number, filled: boolean) => {
     if (isImporting) return
@@ -135,6 +138,8 @@ export function WalkPage() {
         filledCount={effectiveFilled}
         total={total || DEFAULT_CELL_COUNT}
         themeColor={sheet.themeColor}
+        canComplete={canComplete}
+        onComplete={() => void completeSheet(sheet.id)}
         showCompleteCta={sheet.status === 'completed'}
         onViewComplete={() => setStep('view')}
       />

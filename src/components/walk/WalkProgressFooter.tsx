@@ -2,6 +2,8 @@ interface WalkProgressFooterProps {
   filledCount: number
   total: number
   themeColor: string
+  canComplete?: boolean
+  onComplete?: () => void
   showCompleteCta?: boolean
   onViewComplete?: () => void
 }
@@ -10,6 +12,8 @@ export function WalkProgressFooter({
   filledCount,
   total,
   themeColor,
+  canComplete = false,
+  onComplete,
   showCompleteCta = false,
   onViewComplete,
 }: WalkProgressFooterProps) {
@@ -17,6 +21,15 @@ export function WalkProgressFooter({
 
   return (
     <footer className="sticky bottom-0 border-t border-outline-variant/30 bg-background/95 px-page py-4 backdrop-blur-sm">
+      {canComplete ? (
+        <button
+          type="button"
+          onClick={onComplete}
+          className="mb-3 w-full rounded-xl bg-primary py-3 text-sm font-semibold text-on-primary"
+        >
+          완성하기
+        </button>
+      ) : null}
       {showCompleteCta ? (
         <button
           type="button"

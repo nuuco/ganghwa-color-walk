@@ -25,7 +25,7 @@ import {
   loadAllSheets,
   persistSheetPatch,
   setCellsFromBlobs,
-  didBecomeCompleted,
+  completeSheetInStorage,
   moveOrSwapCells,
   setCenterColorSlotInStorage,
 } from '../lib/storage'
@@ -102,6 +102,7 @@ interface AppContextValue {
   updateSheet: (sheetId: string, patch: Partial<ColorWalkSheet>) => Promise<void>
   setCenterColorSlot: (sheetId: string, enabled: boolean) => Promise<void>
   swapCells: (fromIndex: number, toIndex: number) => Promise<void>
+  completeSheet: (sheetId: string) => Promise<boolean>
   getActiveSheet: () => ColorWalkSheet | undefined
 }
 
@@ -278,7 +279,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setIsImporting(true)
 
       try {
-        const { meta, completed } = await setCellsFromBlobs(activeSheetId, assignments)
+        const { meta } = await setCellsFromBlobs(activeSheetId, assignments)
         const hydrated = await hydrateSheet(meta)
         setSheets((prev) => prev.map((s) => (s.id === activeSheetId ? hydrated : s)))
 
@@ -298,9 +299,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
           )
         }
 
-        if (completed) {
-          setStep('view')
-        }
       } finally {
         setIsImporting(false)
       }
@@ -314,11 +312,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
     const hydrated = await hydrateSheet(meta)
     setSheets((prev) => prev.map((s) => (s.id === sheetId ? hydrated : s)))
-
-    if (hydrated.status === 'completed' && step !== 'view') {
-      setStep('view')
-    }
-  }, [step])
+  }, [])
 
   const swapCells = useCallback(
     async (fromIndex: number, toIndex: number) => {
@@ -328,8 +322,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const sheet = sheets.find((s) => s.id === activeSheetId)
       if (!sheet) return
       if (isCenterColorSlot(sheet, fromIndex) || isCenterColorSlot(sheet, toIndex)) return
-
-      const statusBefore = sheet.status
 
       setSheets((prev) =>
         prev.map((s) => {
@@ -349,13 +341,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setSheets((prev) =>
         prev.map((s) => (s.id === activeSheetId ? applyMetaToSheet(s, meta) : s)),
       )
-
-      if (didBecomeCompleted({ status: statusBefore }, meta)) {
-        setStep('view')
-      }
     },
     [activeSheetId, isImporting, sheets],
   )
+
+  const completeSheet = useCallback(async (sheetId: string) => {
+    const meta = await completeSheetInStorage(sheetId)
+    if (!meta) return false
+
+    const hydrated = await hydrateSheet(meta)
+    setSheets((prev) => prev.map((s) => (s.id === sheetId ? hydrated : s)))
+    setActiveSheetId(sheetId)
+    setStep('view')
+    return true
+  }, [])
 
   const openCaptureSheet = useCallback(
     (cellIndex?: number) => {
@@ -455,6 +454,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       updateSheet,
       setCenterColorSlot,
       swapCells,
+      completeSheet,
       getActiveSheet,
     }),
     [
@@ -488,6 +488,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       updateSheet,
       setCenterColorSlot,
       swapCells,
+      completeSheet,
       getActiveSheet,
     ],
   )
