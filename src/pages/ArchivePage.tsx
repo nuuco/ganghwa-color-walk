@@ -22,7 +22,7 @@ function ArchiveStickyHeader({
   return (
     <div className="sticky top-0 z-20 shrink-0 border-b border-outline-variant/20 bg-background/95 backdrop-blur-sm">
       <PageHeader
-        title="나의 강화도 색 수집"
+        title="강화 컬러워크"
         action={
           showToggle ? (
             <ArchiveViewToggle value={viewMode} onChange={onViewModeChange} />
