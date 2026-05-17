@@ -20,6 +20,7 @@ export function ThemeEditModal({
 }: ThemeEditModalProps) {
   const [draftLabel, setDraftLabel] = useState(themeLabel)
   const [draftColor, setDraftColor] = useState(themeColor)
+  const [isRandomSpinning, setIsRandomSpinning] = useState(false)
 
   useEffect(() => {
     if (!open) return
@@ -68,6 +69,11 @@ export function ThemeEditModal({
           onLabelChange={setDraftLabel}
           labelError={labelError}
           labelValid={labelValid && draftLabel.length > 0}
+          onRandomPreset={(preset) => {
+            setDraftColor(preset.themeColor)
+            setDraftLabel(preset.themeLabel)
+          }}
+          onSpinningChange={setIsRandomSpinning}
         />
         <div className="mt-5 flex gap-3">
           <button
@@ -80,7 +86,7 @@ export function ThemeEditModal({
           <button
             type="button"
             onClick={handleSave}
-            disabled={!labelValid}
+            disabled={!labelValid || isRandomSpinning}
             className={`flex h-12 flex-1 items-center justify-center rounded-xl text-sm ${primaryButtonClassName}`}
           >
             저장

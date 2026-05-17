@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react'
 import { SHEET_TEXT_MAX_LENGTH } from '../config/textLimits'
 import { AppBar } from '../components/layout/AppBar'
 import { ThemeStickyBar } from '../components/layout/ThemeStickyBar'
-import { ColorRandomButton } from '../components/theme/ColorRandomButton'
 import { CustomColorPicker } from '../components/theme/CustomColorPicker'
 import { SheetTitleInput } from '../components/theme/SheetTitleInput'
 import { ThemePresetPicker } from '../components/theme/ThemePresetPicker'
@@ -91,8 +90,9 @@ export function ThemePage() {
           onLabelChange={(v) => setThemeDraft({ themeId: 'custom', themeLabel: v })}
           labelError={labelError}
           labelValid={labelValid && themeDraft.themeLabel.length > 0}
+          onRandomPreset={applyPreset}
+          onSpinningChange={setIsRandomSpinning}
         />
-        <ColorRandomButton onSelect={applyPreset} onSpinningChange={setIsRandomSpinning} />
         <ThemePresetPicker selectedId={themeDraft.themeId} onSelect={applyPreset} />
       </div>
       <ThemeStickyBar
