@@ -125,7 +125,11 @@ export function ArchivePage() {
         viewMode={viewMode}
         onViewModeChange={setViewMode}
       />
-      <div className="min-h-0 flex-1 overflow-y-auto">
+      <div
+        className={
+          isEmpty ? 'flex min-h-0 flex-1 flex-col' : 'min-h-0 flex-1 overflow-y-auto'
+        }
+      >
         {isEmpty ? (
           <EmptyArchive />
         ) : (
