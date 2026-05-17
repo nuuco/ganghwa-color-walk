@@ -7,6 +7,7 @@ import { ThemeHintBar } from '../components/walk/ThemeHintBar'
 import { WalkMemo } from '../components/walk/WalkMemo'
 import { WalkProgressFooter } from '../components/walk/WalkProgressFooter'
 import { useApp } from '../context/AppContext'
+import { clampWalkMemo } from '../config/textLimits'
 import { useDebouncedCallback } from '../hooks/useDebouncedCallback'
 
 export function WalkPage() {
@@ -30,7 +31,7 @@ export function WalkPage() {
   const [memo, setMemo] = useState('')
 
   useEffect(() => {
-    if (sheet) setMemo(sheet.noteReflection)
+    if (sheet) setMemo(clampWalkMemo(sheet.noteReflection))
   }, [sheet?.id, sheet?.noteReflection])
 
   const debouncedPersistMemo = useDebouncedCallback((noteReflection: string) => {
@@ -130,8 +131,9 @@ export function WalkPage() {
         value={memo}
         placeholder="오늘 산책의 이야기를 남겨보세요..."
         onChange={(v) => {
-          setMemo(v)
-          debouncedPersistMemo(v)
+          const next = clampWalkMemo(v)
+          setMemo(next)
+          debouncedPersistMemo(next)
         }}
       />
       <WalkProgressFooter
