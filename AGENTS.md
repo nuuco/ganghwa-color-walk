@@ -42,3 +42,4 @@
 - 아카이브 수정: ThemePage(기존 시트 값)·CTA「수정하기」·저장 후 archive
 - 텍스트 선택: accent #f7941e·흰 글자(::selection)
 - WalkMemo: 인풋 위「산책 노트」라벨·FIGMA placeholder
+- themes.ts 프리셋 8종: 표 HEX 반영·갯벌 회색(#8A9A92)·진달래·소창·인삼·고인돌 추가
