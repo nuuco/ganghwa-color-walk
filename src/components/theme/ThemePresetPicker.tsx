@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { THEME_PRESETS, type ThemePreset } from '../../data/themes'
+import { ChevronDownIcon } from '../ui/ChevronDownIcon'
 
 interface ThemePresetPickerProps {
   selectedId: string
@@ -14,11 +15,11 @@ export function ThemePresetPicker({ selectedId, onSelect }: ThemePresetPickerPro
       <button
         type="button"
         onClick={() => setExpanded((v) => !v)}
-        className="flex w-full items-center justify-between rounded-xl bg-surface px-4 py-3 text-sm font-medium"
+        className="flex w-full items-center justify-between gap-2 rounded-xl bg-surface px-4 py-3 text-sm font-medium text-on-surface"
         aria-expanded={expanded}
       >
-        프리셋에서 고르기
-        <span aria-hidden>{expanded ? '▲' : '▼'}</span>
+        <span>색 이름으로 골라보기</span>
+        <ChevronDownIcon expanded={expanded} />
       </button>
       {expanded ? (
         <div className="mt-3 grid grid-cols-2 gap-3">

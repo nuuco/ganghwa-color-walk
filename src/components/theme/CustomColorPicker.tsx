@@ -1,7 +1,7 @@
 import { SHEET_TEXT_MAX_LENGTH } from '../../config/textLimits'
 import type { ThemePreset } from '../../data/themes'
 import { useThemeRandomSpin } from '../../hooks/useThemeRandomSpin'
-import { hexDisplayColor, inputTintStyle } from '../../lib/themeColorTint'
+import { inputTintStyle } from '../../lib/themeColorTint'
 import { primaryButtonClassName } from '../ui/primaryButton'
 
 interface CustomColorPickerProps {
@@ -36,7 +36,6 @@ export function CustomColorPicker({
 
   const displayColor = isSpinning && preview ? preview.themeColor : themeColor
   const displayLabel = isSpinning && preview ? preview.themeLabel : themeLabel
-  const hexColorStyle = { color: hexDisplayColor(displayColor) }
   const spinInputStyle = isSpinning ? inputTintStyle(displayColor) : undefined
 
   const borderClass = isSpinning
@@ -98,10 +97,7 @@ export function CustomColorPicker({
           />
         </label>
 
-        <p
-          className="font-mono text-sm font-semibold tracking-wide transition-colors duration-75"
-          style={hexColorStyle}
-        >
+        <p className="font-mono text-sm font-semibold tracking-wide text-white">
           {displayColor.toUpperCase()}
         </p>
 

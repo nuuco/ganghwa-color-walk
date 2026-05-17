@@ -7,6 +7,7 @@
 - 개발 플랜 정합: 화면 ID·구성요소 체크리스트·Phase 매핑·폰트·S01-E/O01~O03·SheetCard ⋮ 반영 (`color_walk_개발` 플랜)
 - S01-E 확정: 빈 목록은 중앙 「첫 컬러워크를 시작해 보세요」만, 새 시트는 **FAB `+`만** (중앙 CTA 없음)
 - S02 색 선택 UX: 직접(컬러+이름) 메인, 랜덤 선택, 프리셋 카드 접힘 서브 — FIGMA·PAGE·개발 플랜 반영
+- S02 프리셋 접힘: 「색 이름으로 골라보기」·ChevronDownIcon 라인 화살표
 - S02 랜덤: 직접 선택 카드 우측 상단·스와치·HEX·컬러명 연동 스핀(ThemePage·ThemeEditModal)
 - MVP 의사결정: BottomNav 없음, S01 ← 없음, 제목·컬러명 필수, 엽서 헤드 view 편집, 9칸 촬영, 공유 3종, 날짜 S04 수정
 - Phase 1 scaffold complete: React 19·Vite·Tailwind·Context step 전환·S01~S04·O01~O03 스텁
