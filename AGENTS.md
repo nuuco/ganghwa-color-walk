@@ -46,3 +46,4 @@
 - Primary CTA 통일: primaryButtonClassName·accent 글로우 CTA 제거
 - 완성 엽서: WALK #walkOrdinal 배지 제거
 - themes.ts 프리셋 8종: 표 HEX 반영·갯벌 회색(#8A9A92)·진달래·소창·인삼·고인돌 추가
+- themes.ts 채도 상향: 분홍·보라·초록 산뜻한 톤·전 프리셋 비비드 조정
