@@ -1,6 +1,7 @@
 import { forwardRef } from 'react'
-import { isCenterColorSlot } from '../../config/grid'
+import { getCenterCellIndex, isCenterColorSlot } from '../../config/grid'
 import { CenterColorSlotCell } from '../grid/CenterColorSlotCell'
+import { gridMosaicClassName, gridMosaicColumnsStyle } from '../grid/gridMosaic'
 import type { ColorWalkSheet } from '../../types/sheet'
 
 interface PostcardPreviewProps {
@@ -20,6 +21,7 @@ function formatPostcardDate(iso?: string): string {
 export const PostcardPreview = forwardRef<HTMLElement, PostcardPreviewProps>(
   function PostcardPreview({ sheet }, ref) {
     const cellCount = sheet.rows * sheet.cols
+    const centerIndex = getCenterCellIndex(sheet.rows, sheet.cols)
     const displayTitle = sheet.sheetTitle.trim() || sheet.themeLabel
     const completedLabel = formatPostcardDate(sheet.completedAt ?? sheet.updatedAt)
     const memoText = sheet.noteReflection.trim()
@@ -50,10 +52,10 @@ export const PostcardPreview = forwardRef<HTMLElement, PostcardPreviewProps>(
         <h2 className="mb-4 text-xl font-bold leading-snug">{displayTitle}</h2>
 
         <div
-          className="grid"
+          className={gridMosaicClassName}
           style={{
+            ...gridMosaicColumnsStyle,
             gridTemplateColumns: `repeat(${sheet.cols}, minmax(0, 1fr))`,
-            gap: 'var(--grid-gap)',
           }}
         >
           {sheet.cells.slice(0, cellCount).map((cell) => {
@@ -71,7 +73,9 @@ export const PostcardPreview = forwardRef<HTMLElement, PostcardPreviewProps>(
             return (
               <div
                 key={cell.index}
-                className="relative aspect-square overflow-hidden rounded-cell bg-surface-high"
+                className={`relative aspect-square overflow-hidden rounded-cell bg-surface-high${
+                  cell.index === centerIndex ? ' grid-cell-center' : ''
+                }`}
               >
                 {cell.imageUrl ? (
                   <img

@@ -1,4 +1,5 @@
-import { DEFAULT_COLS, isCenterColorSlot } from '../../config/grid'
+import { isCenterColorSlot } from '../../config/grid'
+import { gridMosaicClassName, gridMosaicColumnsStyle } from './gridMosaic'
 import type { ColorWalkSheet } from '../../types/sheet'
 import { CenterColorSlotCell } from './CenterColorSlotCell'
 import { GridCell } from './GridCell'
@@ -15,13 +16,7 @@ export function DynamicGrid({ sheet, onCellClick }: DynamicGridProps) {
   const cellCount = sheet.rows * sheet.cols
 
   return (
-    <div
-      className="grid w-full px-page"
-      style={{
-        gridTemplateColumns: `repeat(${DEFAULT_COLS}, minmax(0, 1fr))`,
-        gap: 'var(--grid-gap)',
-      }}
-    >
+    <div className={`${gridMosaicClassName} px-page`} style={gridMosaicColumnsStyle}>
       {sheet.cells.slice(0, cellCount).map((cell) => {
         if (isCenterColorSlot(sheet, cell.index)) {
           return (

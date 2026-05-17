@@ -20,10 +20,10 @@ export default {
       },
       spacing: {
         page: '20px',
-        'grid-gap': '6px',
+        'grid-gap': '2px',
       },
       borderRadius: {
-        cell: '4px',
+        cell: '0',
       },
       fontFamily: {
         sans: [
@@ -37,6 +37,16 @@ export default {
       },
       maxWidth: {
         app: '28rem',
+      },
+      keyframes: {
+        'celebrate-pop': {
+          '0%': { opacity: '0', transform: 'scale(0.88) translateY(6px)' },
+          '55%': { opacity: '1', transform: 'scale(1.04) translateY(0)' },
+          '100%': { opacity: '1', transform: 'scale(1) translateY(0)' },
+        },
+      },
+      animation: {
+        'celebrate-pop': 'celebrate-pop 0.65s cubic-bezier(0.22, 1, 0.36, 1) both',
       },
     },
   },

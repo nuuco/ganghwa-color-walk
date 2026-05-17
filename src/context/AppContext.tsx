@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react'
@@ -106,6 +107,8 @@ interface AppContextValue {
   setCenterColorSlot: (sheetId: string, enabled: boolean) => Promise<void>
   swapCells: (fromIndex: number, toIndex: number) => Promise<void>
   completeSheet: (sheetId: string) => Promise<boolean>
+  canCelebrateSheet: (sheetId: string) => boolean
+  markSheetCelebrated: (sheetId: string) => void
   getActiveSheet: () => ColorWalkSheet | undefined
 }
 
@@ -113,6 +116,8 @@ const AppContext = createContext<AppContextValue | null>(null)
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [step, setStep] = useState<AppStep>('archive')
+  const [celebrationSheetId, setCelebrationSheetId] = useState<string | null>(null)
+  const celebrationShownRef = useRef<string | null>(null)
   const [activeSheetId, setActiveSheetId] = useState<string | null>(null)
   const [sheets, setSheets] = useState<ColorWalkSheet[]>([])
   const [isHydrating, setIsHydrating] = useState(true)
@@ -379,6 +384,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [activeSheetId, isImporting, sheets],
   )
 
+  const canCelebrateSheet = useCallback(
+    (sheetId: string) =>
+      celebrationSheetId === sheetId && celebrationShownRef.current !== sheetId,
+    [celebrationSheetId],
+  )
+
+  const markSheetCelebrated = useCallback((sheetId: string) => {
+    celebrationShownRef.current = sheetId
+  }, [])
+
+  useEffect(() => {
+    if (step !== 'view') {
+      setCelebrationSheetId(null)
+    }
+  }, [step])
+
   const completeSheet = useCallback(async (sheetId: string) => {
     const meta = await completeSheetInStorage(sheetId)
     if (!meta) return false
@@ -386,6 +407,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const hydrated = await hydrateSheet(meta)
     setSheets((prev) => prev.map((s) => (s.id === sheetId ? hydrated : s)))
     setActiveSheetId(sheetId)
+    celebrationShownRef.current = null
+    setCelebrationSheetId(sheetId)
     setStep('view')
     return true
   }, [])
@@ -491,6 +514,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setCenterColorSlot,
       swapCells,
       completeSheet,
+      canCelebrateSheet,
+      markSheetCelebrated,
       getActiveSheet,
     }),
     [
@@ -527,6 +552,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setCenterColorSlot,
       swapCells,
       completeSheet,
+      canCelebrateSheet,
+      markSheetCelebrated,
       getActiveSheet,
     ],
   )

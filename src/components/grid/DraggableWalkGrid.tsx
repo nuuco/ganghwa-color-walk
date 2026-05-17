@@ -10,7 +10,8 @@ import {
   type DropAnimation,
 } from '@dnd-kit/core'
 import { useState } from 'react'
-import { DEFAULT_COLS, isCenterColorSlot } from '../../config/grid'
+import { getCenterCellIndex, isCenterColorSlot } from '../../config/grid'
+import { gridMosaicClassName, gridMosaicColumnsStyle } from './gridMosaic'
 import type { ColorWalkSheet } from '../../types/sheet'
 import { CenterColorSlotCell } from './CenterColorSlotCell'
 import { parseCellDndId } from './cellDndId'
@@ -45,6 +46,7 @@ export function DraggableWalkGrid({
   onSwapCells,
 }: DraggableWalkGridProps) {
   const cellCount = sheet.rows * sheet.cols
+  const centerIndex = getCenterCellIndex(sheet.rows, sheet.cols)
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
 
   const sensors = useSensors(
@@ -87,13 +89,7 @@ export function DraggableWalkGrid({
       onDragEnd={handleDragEnd}
       onDragCancel={handleDragCancel}
     >
-      <div
-        className="grid w-full px-page"
-        style={{
-          gridTemplateColumns: `repeat(${DEFAULT_COLS}, minmax(0, 1fr))`,
-          gap: 'var(--grid-gap)',
-        }}
-      >
+      <div className={`${gridMosaicClassName} px-page`} style={gridMosaicColumnsStyle}>
         {sheet.cells.slice(0, cellCount).map((cell) => {
           if (isCenterColorSlot(sheet, cell.index)) {
             return (
@@ -114,6 +110,7 @@ export function DraggableWalkGrid({
               variant={filled ? 'photo-filled' : 'photo-empty'}
               imageUrl={cell.imageUrl}
               themeColor={sheet.themeColor}
+              className={cell.index === centerIndex ? 'grid-cell-center' : undefined}
               dropDisabled={reorderDisabled}
               reorderDisabled={reorderDisabled}
               onClick={() => onCellClick(cell.index, filled)}

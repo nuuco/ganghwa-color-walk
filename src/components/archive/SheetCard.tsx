@@ -1,7 +1,14 @@
 import type { ArchiveViewMode } from '../../hooks/useArchiveViewMode'
 import type { ColorWalkSheet } from '../../types/sheet'
-import { DEFAULT_COLS, DEFAULT_ROWS, getEffectiveFilledCount, isCenterColorSlot } from '../../config/grid'
+import {
+  DEFAULT_COLS,
+  DEFAULT_ROWS,
+  getCenterCellIndex,
+  getEffectiveFilledCount,
+  isCenterColorSlot,
+} from '../../config/grid'
 import { CenterColorSlotCell } from '../grid/CenterColorSlotCell'
+import { gridMosaicClassName, gridMosaicColumnsStyle } from '../grid/gridMosaic'
 import { ThemeColorLabel } from '../ui/ThemeColorLabel'
 import { SheetCardOverflowMenu } from './SheetCardOverflowMenu'
 
@@ -28,6 +35,7 @@ export function SheetCard({ sheet, viewMode, onOpen, onEdit, onDelete }: SheetCa
   const progress = total > 0 ? Math.round((effectiveFilled / total) * 100) : 0
   const dateLabel = formatDate(sheet.completedAt ?? sheet.updatedAt)
   const isCompleted = sheet.status === 'completed'
+  const centerIndex = getCenterCellIndex(sheet.rows, sheet.cols)
 
   return (
     <article className="overflow-visible rounded-2xl bg-surface py-4 pl-4 pr-1">
@@ -64,13 +72,7 @@ export function SheetCard({ sheet, viewMode, onOpen, onEdit, onDelete }: SheetCa
 
       {viewMode === 'bento' ? (
         <button type="button" onClick={onOpen} className="w-full" aria-label={`${sheet.sheetTitle} 미니 그리드`}>
-        <div
-          className="grid w-full"
-          style={{
-            gridTemplateColumns: `repeat(${DEFAULT_COLS}, minmax(0, 1fr))`,
-            gap: 'var(--grid-gap)',
-          }}
-        >
+        <div className={gridMosaicClassName} style={gridMosaicColumnsStyle}>
           {sheet.cells.slice(0, DEFAULT_ROWS * DEFAULT_COLS).map((cell) => {
             if (isCenterColorSlot(sheet, cell.index)) {
               return (
@@ -85,7 +87,9 @@ export function SheetCard({ sheet, viewMode, onOpen, onEdit, onDelete }: SheetCa
             return (
               <div
                 key={cell.index}
-                className="aspect-square overflow-hidden rounded-cell bg-surface-high"
+                className={`aspect-square overflow-hidden rounded-cell bg-surface-high${
+                  cell.index === centerIndex ? ' grid-cell-center' : ''
+                }`}
               >
                 {cell.imageUrl ? (
                   <img src={cell.imageUrl} alt="" className="h-full w-full object-cover" />

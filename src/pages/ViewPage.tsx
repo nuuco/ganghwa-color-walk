@@ -14,6 +14,7 @@ import {
   downloadBlob,
   shareImageFile,
 } from '../lib/exportImage'
+import { useCompletionCelebration } from '../hooks/useCompletionCelebration'
 import { useOnlineStatus } from '../hooks/useOnlineStatus'
 import { isKakaoConfigured, shareKakaoFeed } from '../lib/kakao'
 
@@ -31,12 +32,25 @@ async function capturePostcardBlob(root: HTMLElement): Promise<Blob> {
 }
 
 export function ViewPage() {
-  const { getActiveSheet, setStep, setActiveSheetId } = useApp()
+  const {
+    getActiveSheet,
+    setStep,
+    setActiveSheetId,
+    canCelebrateSheet,
+    markSheetCelebrated,
+  } = useApp()
   const isOnline = useOnlineStatus()
   const sheet = getActiveSheet()
   const postcardRef = useRef<HTMLElement>(null)
   const [exporting, setExporting] = useState(false)
   const [statusMessage, setStatusMessage] = useState<string | undefined>()
+  const shouldCelebrate = Boolean(sheet && canCelebrateSheet(sheet.id))
+  const { celebrating } = useCompletionCelebration({
+    sheetId: sheet?.id ?? '',
+    themeColor: sheet?.themeColor,
+    shouldCelebrate,
+    onCelebrated: markSheetCelebrated,
+  })
 
   if (!sheet) {
     return (
@@ -144,7 +158,7 @@ export function ViewPage() {
         }
       />
       <CompleteView>
-        <SummaryBanner />
+        <SummaryBanner celebrating={celebrating} />
         <div className="px-page">
           <PostcardPreview ref={postcardRef} sheet={sheet} />
         </div>

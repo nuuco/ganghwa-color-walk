@@ -10,6 +10,7 @@ interface WalkGridCellProps {
   variant: GridCellVariant
   imageUrl?: string
   themeColor: string
+  className?: string
   dropDisabled?: boolean
   reorderDisabled?: boolean
   onClick: () => void
@@ -20,6 +21,7 @@ export function WalkGridCell({
   variant,
   imageUrl,
   themeColor,
+  className = '',
   dropDisabled = false,
   reorderDisabled = false,
   onClick,
@@ -61,7 +63,7 @@ export function WalkGridCell({
   return (
     <div
       ref={setNodeRef}
-      className="relative aspect-square w-full overflow-hidden rounded-cell bg-surface-high"
+      className={`relative aspect-square w-full overflow-hidden rounded-cell bg-surface-high ${className}`.trim()}
       style={cellStyle}
     >
       <button

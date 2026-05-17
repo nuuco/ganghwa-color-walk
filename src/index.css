@@ -13,7 +13,7 @@
   --color-on-accent: #ffffff;
   --theme-color: #a882e0;
   --page-margin: 20px;
-  --grid-gap: 6px;
+  --grid-gap: 2px;
 }
 
 @layer base {
@@ -49,4 +49,15 @@
     background-color: var(--color-accent);
     color: var(--color-on-accent);
   }
+}
+
+.grid-mosaic {
+  gap: var(--grid-gap);
+}
+
+/* 가운데 십자 여백: 중앙 셀만 gap의 절반만큼 당겨 모자이크가 이어지게 */
+.grid-mosaic > .grid-cell-center {
+  position: relative;
+  z-index: 1;
+  margin: calc(var(--grid-gap) / -2);
 }
