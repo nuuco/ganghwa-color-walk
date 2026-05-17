@@ -10,7 +10,7 @@ export function FAB({ onClick, label = '새 컬러워크' }: FABProps) {
         <button
           type="button"
           onClick={onClick}
-          className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-2xl font-light text-on-primary shadow-lg"
+          className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-2xl font-normal text-on-primary shadow-[0_4px_16px_rgba(0,0,0,0.35)]"
           aria-label={label}
         >
           +
