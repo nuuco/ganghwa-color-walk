@@ -41,3 +41,4 @@
 - 아카이브 ⋮ 메뉴: 수정(walk)·삭제 선택·버튼 우측 정렬
 - 아카이브 수정: ThemePage(기존 시트 값)·CTA「수정하기」·저장 후 archive
 - 텍스트 선택: accent #f7941e·흰 글자(::selection)
+- WalkMemo: 인풋 위「산책 노트」라벨·FIGMA placeholder

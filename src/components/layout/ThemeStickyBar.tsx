@@ -30,7 +30,7 @@ export function ThemeStickyBar({
         type="button"
         disabled={disabled}
         onClick={onCta}
-        className="flex h-12 w-full items-center justify-center rounded-xl bg-accent text-base font-semibold text-on-accent shadow-[0_4px_14px_rgba(247,148,30,0.35)] disabled:cursor-not-allowed disabled:opacity-40"
+        className="flex h-12 w-full items-center justify-center rounded-xl bg-primary text-base font-semibold text-on-primary disabled:cursor-not-allowed disabled:opacity-40"
       >
         {ctaLabel}
       </button>
