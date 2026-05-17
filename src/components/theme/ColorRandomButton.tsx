@@ -50,7 +50,7 @@ export function ColorRandomButton({ onSelect, onSpinningChange }: ColorRandomBut
         type="button"
         onClick={handleRandom}
         disabled={spinning}
-        className="flex w-full items-center justify-between gap-3 rounded-xl border border-outline-variant/50 bg-surface px-4 py-4 disabled:opacity-60"
+        className="flex w-full items-center justify-between gap-3 rounded-xl border border-outline-variant/50 bg-surface px-4 py-4 transition-colors hover:border-accent/40 disabled:opacity-60"
       >
         <span className="text-sm font-medium">랜덤 선택</span>
         {preview ? (

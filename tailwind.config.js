@@ -14,6 +14,8 @@ export default {
         'outline-variant': '#474741',
         primary: '#ffffff',
         'on-primary': '#31312d',
+        accent: '#f7941e',
+        'on-accent': '#ffffff',
         kakao: '#FEE500',
       },
       spacing: {

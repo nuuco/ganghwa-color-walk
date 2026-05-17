@@ -35,13 +35,23 @@ export function CustomColorPicker({
       {embedded ? null : (
         <h3 className="mb-4 text-sm font-semibold text-on-surface-variant">직접 선택</h3>
       )}
-      <div className="flex flex-col items-center gap-4">
-        <label className="relative block h-28 w-28 cursor-pointer overflow-hidden rounded-full border-2 border-outline-variant/50">
+      <div className="flex flex-col items-center gap-5">
+        <label className="group relative block h-[7.5rem] w-[7.5rem] cursor-pointer">
           <span
-            className="absolute inset-0"
+            className="pointer-events-none absolute -inset-2 rounded-full bg-accent/15 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100"
+            aria-hidden
+          />
+          <span
+            className="block h-full w-full overflow-hidden rounded-full shadow-[0_8px_24px_rgba(0,0,0,0.35)] ring-[3px] ring-accent ring-offset-4 ring-offset-surface-high"
             style={{ backgroundColor: themeColor }}
             aria-hidden
           />
+          <span
+            className="pointer-events-none absolute bottom-0 right-0 flex h-9 w-9 items-center justify-center rounded-full bg-accent text-sm font-bold text-on-accent shadow-md"
+            aria-hidden
+          >
+            +
+          </span>
           <input
             type="color"
             value={themeColor}
@@ -50,7 +60,11 @@ export function CustomColorPicker({
             aria-label="색상 선택"
           />
         </label>
-        <p className="font-mono text-xs text-on-surface-variant">{themeColor.toUpperCase()}</p>
+
+        <p className="rounded-full bg-accent px-4 py-1.5 font-mono text-sm font-semibold tracking-wide text-on-accent shadow-sm">
+          {themeColor.toUpperCase()}
+        </p>
+
         <div className="w-full">
           <label htmlFor="theme-label" className="mb-2 block text-sm">
             컬러명
@@ -63,7 +77,7 @@ export function CustomColorPicker({
               value={themeLabel}
               onChange={(e) => onLabelChange(e.target.value)}
               placeholder="예: 순무 보라"
-              className={`w-full rounded-xl border bg-surface px-4 py-3 pr-10 outline-none focus:ring-1 focus:ring-outline ${borderClass}`}
+              className={`w-full rounded-xl border bg-surface px-4 py-3 pr-10 outline-none focus:border-accent/60 focus:ring-2 focus:ring-accent/25 ${borderClass}`}
             />
             {labelValid ? (
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500" aria-hidden>

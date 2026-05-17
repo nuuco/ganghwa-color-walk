@@ -29,8 +29,8 @@ export function ThemePresetPicker({ selectedId, onSelect }: ThemePresetPickerPro
               onClick={() => onSelect(preset)}
               className={`rounded-xl border p-3 text-left transition ${
                 selectedId === preset.id
-                  ? 'border-on-surface bg-surface-high'
-                  : 'border-outline-variant/40 bg-surface'
+                  ? 'border-accent bg-accent/10 ring-1 ring-accent/50'
+                  : 'border-outline-variant/40 bg-surface hover:border-accent/30'
               }`}
             >
               <span
