@@ -33,3 +33,4 @@
 - S04 수정 버튼: AppBarAction surface-high 칩·PencilIcon
 - walk 헤더 색 편집: 제목·(스와치+컬러명) 줄 분리·ThemeEditModal·WalkThemeDisplay 한 줄·themeId custom
 - walk 메모: 산책 시작 제거·WalkMemo 단일·noteReflection·PostcardPreview 엽서 표시
+- PWA 메인 뒤로가기: standalone 아카이브에서 history 가드·ExitConfirmDialog 종료 확인

@@ -3,8 +3,10 @@ import { PwaInstallProvider } from './context/PwaInstallContext'
 import { CaptureSourceSheet } from './components/overlays/CaptureSourceSheet'
 import { CellDetailModal } from './components/overlays/CellDetailModal'
 import { ConfirmDeleteDialog } from './components/overlays/ConfirmDeleteDialog'
+import { ExitConfirmDialog } from './components/overlays/ExitConfirmDialog'
 import { ImportOverlay } from './components/overlays/ImportOverlay'
 import { AppProvider, useApp } from './context/AppContext'
+import { usePwaExitGuard } from './hooks/usePwaExitGuard'
 import { ArchivePage } from './pages/ArchivePage'
 import { ThemePage } from './pages/ThemePage'
 import { ViewPage } from './pages/ViewPage'
@@ -32,6 +34,13 @@ function AppShell() {
   const sheet = getActiveSheet()
   const activeCell =
     sheet && activeCellIndex !== null ? sheet.cells[activeCellIndex] : undefined
+
+  const exitGuardEnabled =
+    step === 'archive' && !confirmDeleteOpen && !captureSheetOpen && !cellDetailOpen
+
+  const { exitConfirmOpen, confirmExit, cancelExit } = usePwaExitGuard({
+    enabled: exitGuardEnabled,
+  })
 
   return (
     <div className="mx-auto min-h-dvh w-full max-w-app bg-background">
@@ -69,6 +78,11 @@ function AppShell() {
         target={deleteTarget}
         onClose={closeConfirmDelete}
         onConfirm={confirmDelete}
+      />
+      <ExitConfirmDialog
+        open={exitConfirmOpen}
+        onClose={cancelExit}
+        onConfirm={confirmExit}
       />
     </div>
   )
