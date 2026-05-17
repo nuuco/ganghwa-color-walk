@@ -32,3 +32,4 @@
 - 완성 후 수정: 9/9 재완성→view·DnD 완성·하단 「완성 화면 보기」·뒤로→view(완성 시)
 - S04 수정 버튼: AppBarAction surface-high 칩·PencilIcon
 - walk 헤더 색 편집: 제목·(스와치+컬러명) 줄 분리·ThemeEditModal·WalkThemeDisplay 한 줄·themeId custom
+- walk 메모: 산책 시작 제거·WalkMemo 단일·noteReflection·PostcardPreview 엽서 표시

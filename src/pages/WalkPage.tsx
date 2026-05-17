@@ -5,7 +5,7 @@ import { CenterColorSlotToggle } from '../components/walk/CenterColorSlotToggle'
 import { DEFAULT_CELL_COUNT, getEffectiveFilledCount, isCenterColorSlot } from '../config/grid'
 import { WalkHeader } from '../components/walk/WalkHeader'
 import { ThemeHintBar } from '../components/walk/ThemeHintBar'
-import { WalkJournal } from '../components/walk/WalkJournal'
+import { WalkMemo } from '../components/walk/WalkMemo'
 import { WalkProgressFooter } from '../components/walk/WalkProgressFooter'
 import { useApp } from '../context/AppContext'
 import { useDebouncedCallback } from '../hooks/useDebouncedCallback'
@@ -27,23 +27,16 @@ export function WalkPage() {
   } = useApp()
 
   const sheet = getActiveSheet()
-  const [noteStart, setNoteStart] = useState('')
-  const [noteReflection, setNoteReflection] = useState('')
+  const [memo, setMemo] = useState('')
 
   useEffect(() => {
-    if (sheet) {
-      setNoteStart(sheet.noteStart)
-      setNoteReflection(sheet.noteReflection)
-    }
-  }, [sheet?.id, sheet?.noteStart, sheet?.noteReflection])
+    if (sheet) setMemo(sheet.noteReflection)
+  }, [sheet?.id, sheet?.noteReflection])
 
-  const debouncedPersistNotes = useDebouncedCallback(
-    (patch: { noteStart?: string; noteReflection?: string }) => {
-      if (!sheet) return
-      void updateSheet(sheet.id, patch)
-    },
-    300,
-  )
+  const debouncedPersistMemo = useDebouncedCallback((noteReflection: string) => {
+    if (!sheet) return
+    void updateSheet(sheet.id, { noteReflection })
+  }, 300)
 
   useEffect(() => {
     if (!fileError) return
@@ -124,28 +117,18 @@ export function WalkPage() {
         enabled={sheet.centerColorSlot}
         onChange={(enabled) => void setCenterColorSlot(sheet.id, enabled)}
       />
-      <WalkJournal
-        label="산책 시작"
-        value={noteStart}
-        placeholder="오늘 산책을 시작하며..."
-        onChange={(v) => {
-          setNoteStart(v)
-          debouncedPersistNotes({ noteStart: v })
-        }}
-      />
       <DraggableWalkGrid
         sheet={sheet}
         reorderDisabled={isImporting}
         onCellClick={handleCellClick}
         onSwapCells={(from, to) => void swapCells(from, to)}
       />
-      <WalkJournal
-        label="돌아보며"
-        value={noteReflection}
-        placeholder="산책을 마치며..."
+      <WalkMemo
+        value={memo}
+        placeholder="오늘 산책의 이야기를 남겨보세요..."
         onChange={(v) => {
-          setNoteReflection(v)
-          debouncedPersistNotes({ noteReflection: v })
+          setMemo(v)
+          debouncedPersistMemo(v)
         }}
       />
       <WalkProgressFooter

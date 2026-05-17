@@ -22,6 +22,7 @@ export const PostcardPreview = forwardRef<HTMLElement, PostcardPreviewProps>(
     const cellCount = sheet.rows * sheet.cols
     const displayTitle = sheet.sheetTitle.trim() || sheet.themeLabel
     const completedLabel = formatPostcardDate(sheet.completedAt ?? sheet.updatedAt)
+    const memoText = sheet.noteReflection.trim()
 
     return (
       <section
@@ -84,6 +85,12 @@ export const PostcardPreview = forwardRef<HTMLElement, PostcardPreviewProps>(
             )
           })}
         </div>
+
+        {memoText ? (
+          <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-on-surface">
+            {memoText}
+          </p>
+        ) : null}
 
         <footer className="mt-4 flex items-end justify-between gap-3">
           <p className="text-xs text-on-surface-variant">{completedLabel}</p>
